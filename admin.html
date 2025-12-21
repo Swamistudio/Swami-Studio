@@ -7,29 +7,17 @@
     <style>
         body { background-color: #f4f4f4; font-family: 'Segoe UI', sans-serif; padding: 20px; color: #333; }
         .container { max-width: 900px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
-        
         h1 { color: #333; border-bottom: 3px solid #FF9900; display: inline-block; padding-bottom: 5px; }
         h2 { margin-top: 30px; color: #555; font-size: 1.2rem; background: #eee; padding: 10px; border-radius: 5px; }
-        
         .form-group { margin-bottom: 20px; }
         label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 0.9rem; }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; }
         input:focus { border-color: #FF9900; outline: none; }
-        
         .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        
-        /* BUTTON STYLES */
-        .main-btn {
-            background-color: #FF9900; color: white; border: none; padding: 15px;
-            font-size: 1.1rem; cursor: pointer; width: 100%; font-weight: bold; border-radius: 6px;
-            transition: 0.3s;
-        }
+        .main-btn { background-color: #FF9900; color: white; border: none; padding: 15px; font-size: 1.1rem; cursor: pointer; width: 100%; font-weight: bold; border-radius: 6px; transition: 0.3s; }
         .main-btn:hover { background-color: #cc7a00; }
-        .update-btn { background-color: #007bff; } 
-        .update-btn:hover { background-color: #0056b3; }
+        .update-btn { background-color: #007bff; } .update-btn:hover { background-color: #0056b3; }
         .cancel-btn { background-color: #666; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; display: none; margin-top: 10px; width: 100%; }
-
-        /* LIST STYLES */
         .list-item { background: #fff; border-bottom: 1px solid #eee; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
         .action-btns { display: flex; gap: 10px; }
         .delete-btn { background: #ff4444; color: white; border:none; padding: 5px 15px; cursor:pointer; border-radius:4px; }
@@ -43,14 +31,8 @@
 
     <h2>1. Website Branding</h2>
     <div class="grid-inputs">
-        <div class="form-group">
-            <label>Logo Image URL</label>
-            <input type="text" id="siteLogo" placeholder="Logo URL">
-        </div>
-        <div class="form-group">
-            <label>About Us Background URL</label>
-            <input type="text" id="aboutBg" placeholder="Background Image URL">
-        </div>
+        <div class="form-group"><label>Logo Image URL</label><input type="text" id="siteLogo" placeholder="Logo URL"></div>
+        <div class="form-group"><label>About Us Background URL</label><input type="text" id="aboutBg" placeholder="Background Image URL"></div>
     </div>
     <button class="main-btn" onclick="saveBranding()" style="background:#333;">Update Branding</button>
 
@@ -62,35 +44,14 @@
     <p style="font-size: 0.9rem; color: #666; margin-top: 5px;">Active: <span id="activeCats"></span></p>
 
     <h2 id="formTitle">3. Add New Package / Album</h2>
-    
-    <div class="form-group">
-        <label>Select Category</label>
-        <select id="category"></select>
-    </div>
-
-    <div class="form-group">
-        <label>Package Title (Sub-Category)</label>
-        <input type="text" id="title" placeholder="e.g. Rohan & Priya Wedding / Gold Package">
-    </div>
-
-    <div class="form-group">
-        <label>Price (₹)</label>
-        <input type="number" id="price" placeholder="e.g. 25000">
-    </div>
-
-    <div class="form-group">
-        <label>Description</label>
-        <textarea id="desc" rows="3" placeholder="Details about this package..."></textarea>
-    </div>
+    <div class="form-group"><label>Select Category</label><select id="category"></select></div>
+    <div class="form-group"><label>Package Title (Sub-Category)</label><input type="text" id="title" placeholder="e.g. Rohan & Priya Wedding / Gold Package"></div>
+    <div class="form-group"><label>Price (₹)</label><input type="number" id="price" placeholder="e.g. 25000"></div>
+    <div class="form-group"><label>Description</label><textarea id="desc" rows="3" placeholder="Details about this package..."></textarea></div>
 
     <div style="background: #fff8e1; padding: 15px; border-radius: 8px; border: 1px solid #ffe0b2; margin-bottom: 20px;">
         <label style="color: #FF9900;">Step 4: Upload Media (URLs)</label>
-        
-        <div class="form-group">
-            <label>Main Cover Image (Required)</label>
-            <input type="text" id="imgMain" placeholder="Main thumbnail image URL">
-        </div>
-
+        <div class="form-group"><label>Main Cover Image (Required)</label><input type="text" id="imgMain" placeholder="Main thumbnail image URL"></div>
         <div class="grid-inputs">
             <div><label>Extra 1</label><input type="text" class="extra-img" id="ex1" placeholder="Optional"></div>
             <div><label>Extra 2</label><input type="text" class="extra-img" id="ex2" placeholder="Optional"></div>
@@ -111,7 +72,6 @@
 <script>
     let editModeIndex = -1;
 
-    // --- BRANDING ---
     function saveBranding() {
         const logo = document.getElementById('siteLogo').value;
         const about = document.getElementById('aboutBg').value;
@@ -120,22 +80,13 @@
         alert("Branding Updated Successfully!");
     }
 
-    // --- CATEGORIES ---
     function loadCategories() {
         let cats = JSON.parse(localStorage.getItem('swamiCategories'));
         if (!cats) { cats = ['Wedding', 'Pre-Wedding', 'Maternity', 'Events']; localStorage.setItem('swamiCategories', JSON.stringify(cats)); }
-        
-        const select = document.getElementById('category');
-        select.innerHTML = '';
-        cats.forEach(c => {
-            let opt = document.createElement('option');
-            opt.value = c; opt.innerHTML = c; select.appendChild(opt);
-        });
+        const select = document.getElementById('category'); select.innerHTML = '';
+        cats.forEach(c => { let opt = document.createElement('option'); opt.value = c; opt.innerHTML = c; select.appendChild(opt); });
         document.getElementById('activeCats').innerText = cats.join(', ');
-        
-        // Load Saved Branding
-        const savedLogo = localStorage.getItem('swamiLogo');
-        const savedAbout = localStorage.getItem('swamiAboutBg');
+        const savedLogo = localStorage.getItem('swamiLogo'); const savedAbout = localStorage.getItem('swamiAboutBg');
         if(savedLogo) document.getElementById('siteLogo').value = savedLogo;
         if(savedAbout) document.getElementById('aboutBg').value = savedAbout;
     }
@@ -144,133 +95,47 @@
         const newCat = document.getElementById('newCatName').value.trim();
         if(!newCat) return;
         let cats = JSON.parse(localStorage.getItem('swamiCategories'));
-        if(!cats.includes(newCat)) {
-            cats.push(newCat);
-            localStorage.setItem('swamiCategories', JSON.stringify(cats));
-            loadCategories();
-            document.getElementById('newCatName').value = '';
-        }
+        if(!cats.includes(newCat)) { cats.push(newCat); localStorage.setItem('swamiCategories', JSON.stringify(cats)); loadCategories(); document.getElementById('newCatName').value = ''; }
     }
 
-    // --- PACKAGES ---
     function handlePackageSubmit() {
-        const extras = [];
-        document.querySelectorAll('.extra-img').forEach(input => {
-            if(input.value.trim()) extras.push(input.value.trim());
-        });
-
-        const newItem = {
-            id: Date.now(),
-            category: document.getElementById('category').value,
-            title: document.getElementById('title').value,
-            price: document.getElementById('price').value,
-            desc: document.getElementById('desc').value,
-            mainImg: document.getElementById('imgMain').value,
-            extraImgs: extras,
-            video: document.getElementById('vidUrl').value
-        };
-
-        if(!newItem.title || !newItem.mainImg) {
-            alert("Title and Main Image are required!");
-            return;
-        }
-
+        const extras = []; document.querySelectorAll('.extra-img').forEach(input => { if(input.value.trim()) extras.push(input.value.trim()); });
+        const newItem = { id: Date.now(), category: document.getElementById('category').value, title: document.getElementById('title').value, price: document.getElementById('price').value, desc: document.getElementById('desc').value, mainImg: document.getElementById('imgMain').value, extraImgs: extras, video: document.getElementById('vidUrl').value };
+        if(!newItem.title || !newItem.mainImg) { alert("Title and Main Image are required!"); return; }
         let data = JSON.parse(localStorage.getItem('swamiDataPro')) || [];
-
-        if (editModeIndex === -1) {
-            data.push(newItem);
-            alert("Package Published!");
-        } else {
-            newItem.id = data[editModeIndex].id; 
-            data[editModeIndex] = newItem;
-            alert("Package Updated Successfully!");
-            cancelEdit();
-        }
-
-        localStorage.setItem('swamiDataPro', JSON.stringify(data));
-        loadItems();
-        clearForm();
+        if (editModeIndex === -1) { data.push(newItem); alert("Package Published!"); } 
+        else { newItem.id = data[editModeIndex].id; data[editModeIndex] = newItem; alert("Package Updated Successfully!"); cancelEdit(); }
+        localStorage.setItem('swamiDataPro', JSON.stringify(data)); loadItems(); clearForm();
     }
 
     function loadItems() {
         const data = JSON.parse(localStorage.getItem('swamiDataPro')) || [];
-        const container = document.getElementById('listContainer');
-        container.innerHTML = '';
-        
+        const container = document.getElementById('listContainer'); container.innerHTML = '';
         data.forEach((item, index) => { 
-            const div = document.createElement('div');
-            div.className = 'list-item';
-            div.innerHTML = `
-                <div><strong>${item.category}</strong>: ${item.title} (₹${item.price})</div>
-                <div class="action-btns">
-                    <button class="edit-btn" onclick="editItem(${index})">Edit</button>
-                    <button class="delete-btn" onclick="deleteItem(${index})">Delete</button>
-                </div>
-            `;
+            const div = document.createElement('div'); div.className = 'list-item';
+            div.innerHTML = `<div><strong>${item.category}</strong>: ${item.title} (₹${item.price})</div><div class="action-btns"><button class="edit-btn" onclick="editItem(${index})">Edit</button><button class="delete-btn" onclick="deleteItem(${index})">Delete</button></div>`;
             container.appendChild(div);
         });
     }
 
     function editItem(index) {
-        let data = JSON.parse(localStorage.getItem('swamiDataPro')) || [];
-        let item = data[index];
-        editModeIndex = index;
-
-        document.getElementById('category').value = item.category;
-        document.getElementById('title').value = item.title;
-        document.getElementById('price').value = item.price;
-        document.getElementById('desc').value = item.desc;
-        document.getElementById('imgMain').value = item.mainImg;
-        document.getElementById('vidUrl').value = item.video || '';
-
+        let data = JSON.parse(localStorage.getItem('swamiDataPro')) || []; let item = data[index]; editModeIndex = index;
+        document.getElementById('category').value = item.category; document.getElementById('title').value = item.title; document.getElementById('price').value = item.price; document.getElementById('desc').value = item.desc; document.getElementById('imgMain').value = item.mainImg; document.getElementById('vidUrl').value = item.video || '';
         document.querySelectorAll('.extra-img').forEach(i => i.value = ''); 
-        if(item.extraImgs) {
-            item.extraImgs.forEach((img, i) => {
-                if(i < 5) document.getElementById('ex'+(i+1)).value = img;
-            });
-        }
-
-        document.getElementById('formTitle').innerText = "Edit Package: " + item.title;
-        document.getElementById('formTitle').style.color = "#007bff";
-        const btn = document.getElementById('submitBtn');
-        btn.innerText = "UPDATE PACKAGE";
-        btn.classList.add('update-btn');
-        document.getElementById('cancelBtn').style.display = "block";
-        window.scrollTo(0, 0);
+        if(item.extraImgs) { item.extraImgs.forEach((img, i) => { if(i < 5) document.getElementById('ex'+(i+1)).value = img; }); }
+        document.getElementById('formTitle').innerText = "Edit Package: " + item.title; document.getElementById('formTitle').style.color = "#007bff";
+        const btn = document.getElementById('submitBtn'); btn.innerText = "UPDATE PACKAGE"; btn.classList.add('update-btn');
+        document.getElementById('cancelBtn').style.display = "block"; window.scrollTo(0, 0);
     }
 
     function cancelEdit() {
-        editModeIndex = -1;
-        clearForm();
-        document.getElementById('formTitle').innerText = "3. Add New Package / Album";
-        document.getElementById('formTitle').style.color = "#555";
-        const btn = document.getElementById('submitBtn');
-        btn.innerText = "PUBLISH PACKAGE";
-        btn.classList.remove('update-btn');
-        document.getElementById('cancelBtn').style.display = "none";
+        editModeIndex = -1; clearForm(); document.getElementById('formTitle').innerText = "3. Add New Package / Album"; document.getElementById('formTitle').style.color = "#555";
+        const btn = document.getElementById('submitBtn'); btn.innerText = "PUBLISH PACKAGE"; btn.classList.remove('update-btn'); document.getElementById('cancelBtn').style.display = "none";
     }
 
-    function clearForm() {
-        document.getElementById('title').value = '';
-        document.getElementById('price').value = '';
-        document.getElementById('desc').value = '';
-        document.getElementById('imgMain').value = '';
-        document.getElementById('vidUrl').value = '';
-        document.querySelectorAll('.extra-img').forEach(i => i.value = '');
-    }
-
-    function deleteItem(index) {
-        if(confirm("Are you sure?")) {
-            let data = JSON.parse(localStorage.getItem('swamiDataPro')) || [];
-            data.splice(index, 1);
-            localStorage.setItem('swamiDataPro', JSON.stringify(data));
-            loadItems();
-            if(index === editModeIndex) cancelEdit();
-        }
-    }
-
+    function clearForm() { document.getElementById('title').value = ''; document.getElementById('price').value = ''; document.getElementById('desc').value = ''; document.getElementById('imgMain').value = ''; document.getElementById('vidUrl').value = ''; document.querySelectorAll('.extra-img').forEach(i => i.value = ''); }
+    function deleteItem(index) { if(confirm("Are you sure?")) { let data = JSON.parse(localStorage.getItem('swamiDataPro')) || []; data.splice(index, 1); localStorage.setItem('swamiDataPro', JSON.stringify(data)); loadItems(); if(index === editModeIndex) cancelEdit(); }}
     window.onload = function() { loadCategories(); loadItems(); };
 </script>
-
 </body>
 </html>
