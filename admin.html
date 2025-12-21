@@ -14,17 +14,37 @@
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; }
         input:focus { border-color: #FF9900; outline: none; }
         .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        
+        /* BUTTONS */
         .main-btn { background-color: #FF9900; color: white; border: none; padding: 15px; font-size: 1.1rem; cursor: pointer; width: 100%; font-weight: bold; border-radius: 6px; transition: 0.3s; }
         .main-btn:hover { background-color: #cc7a00; }
         .update-btn { background-color: #007bff; } .update-btn:hover { background-color: #0056b3; }
         .cancel-btn { background-color: #666; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; display: none; margin-top: 10px; width: 100%; }
+        
+        /* LISTS */
         .list-item { background: #fff; border-bottom: 1px solid #eee; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
         .action-btns { display: flex; gap: 10px; }
         .delete-btn { background: #ff4444; color: white; border:none; padding: 5px 15px; cursor:pointer; border-radius:4px; }
         .edit-btn { background: #007bff; color: white; border:none; padding: 5px 15px; cursor:pointer; border-radius:4px; }
+
+        /* LOGIN SCREEN STYLE */
+        #loginOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #222; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;
+        }
+        .login-box { background: white; padding: 40px; border-radius: 10px; text-align: center; width: 300px; }
+        .login-box input { margin-bottom: 15px; text-align: center; font-size: 1.2rem; letter-spacing: 2px; }
     </style>
 </head>
 <body>
+
+<div id="loginOverlay">
+    <div class="login-box">
+        <h3 style="margin-bottom:20px;">Admin Login</h3>
+        <input type="password" id="adminPass" placeholder="Enter Password">
+        <button class="main-btn" onclick="checkLogin()">Unlock</button>
+    </div>
+</div>
 
 <div class="container">
     <h1>Swami Studio Admin</h1>
@@ -36,12 +56,21 @@
     </div>
     <button class="main-btn" onclick="saveBranding()" style="background:#333;">Update Branding</button>
 
-    <h2>2. Create Categories</h2>
+    <h2 id="catFormTitle">2. Manage Categories</h2>
     <div class="grid-inputs">
-        <input type="text" id="newCatName" placeholder="New Category (e.g. Haldi, Wedding)">
-        <button class="main-btn" onclick="addNewCategory()" style="padding: 10px;">+ Add Category</button>
+        <div class="form-group">
+            <label>Category Name</label>
+            <input type="text" id="catName" placeholder="e.g. Wedding">
+        </div>
+        <div class="form-group">
+            <label>Short Description</label>
+            <input type="text" id="catDesc" placeholder="e.g. Best moments of your life">
+        </div>
     </div>
-    <p style="font-size: 0.9rem; color: #666; margin-top: 5px;">Active: <span id="activeCats"></span></p>
+    <button id="catSubmitBtn" class="main-btn" onclick="handleCategorySubmit()">+ Add Category</button>
+    <button id="catCancelBtn" class="cancel-btn" onclick="cancelCatEdit()">Cancel Edit</button>
+
+    <div id="categoryListContainer" style="margin-top: 20px; background: #fafafa; padding: 10px; border-radius: 8px;"></div>
 
     <h2 id="formTitle">3. Add New Package / Album</h2>
     <div class="form-group"><label>Select Category</label><select id="category"></select></div>
@@ -70,8 +99,19 @@
 </div>
 
 <script>
-    let editModeIndex = -1;
+    let packageEditIndex = -1;
+    let catEditIndex = -1;
 
+    // --- SECURITY CHECK ---
+    function checkLogin() {
+        const pass = document.getElementById('adminPass').value;
+        if(pass === '8369910171') {
+            document.getElementById('loginOverlay').style.display = 'none';
+            sessionStorage.setItem('swamiAdminAuth', 'true');
+        } else { alert('Incorrect Password!'); }
+    }
+
+    // --- BRANDING ---
     function saveBranding() {
         const logo = document.getElementById('siteLogo').value;
         const about = document.getElementById('aboutBg').value;
@@ -80,31 +120,123 @@
         alert("Branding Updated Successfully!");
     }
 
+    // --- CATEGORIES LOGIC (NEW) ---
     function loadCategories() {
         let cats = JSON.parse(localStorage.getItem('swamiCategories'));
-        if (!cats) { cats = ['Wedding', 'Pre-Wedding', 'Maternity', 'Events']; localStorage.setItem('swamiCategories', JSON.stringify(cats)); }
-        const select = document.getElementById('category'); select.innerHTML = '';
-        cats.forEach(c => { let opt = document.createElement('option'); opt.value = c; opt.innerHTML = c; select.appendChild(opt); });
-        document.getElementById('activeCats').innerText = cats.join(', ');
-        const savedLogo = localStorage.getItem('swamiLogo'); const savedAbout = localStorage.getItem('swamiAboutBg');
+        
+        // MIGRATION: If user has old format (array of strings), convert to objects
+        if (!cats) { 
+            cats = [{name:'Wedding', desc:''}, {name:'Pre-Wedding', desc:''}]; 
+            localStorage.setItem('swamiCategories', JSON.stringify(cats));
+        } else if (cats.length > 0 && typeof cats[0] === 'string') {
+            cats = cats.map(c => ({ name: c, desc: '' }));
+            localStorage.setItem('swamiCategories', JSON.stringify(cats));
+        }
+
+        // 1. Populate Dropdown for Packages
+        const select = document.getElementById('category'); 
+        select.innerHTML = '';
+        cats.forEach(c => { 
+            let opt = document.createElement('option'); 
+            opt.value = c.name; 
+            opt.innerHTML = c.name; 
+            select.appendChild(opt); 
+        });
+
+        // 2. Populate List for Editing
+        const list = document.getElementById('categoryListContainer');
+        list.innerHTML = '';
+        cats.forEach((c, index) => {
+            const div = document.createElement('div');
+            div.className = 'list-item';
+            div.style.borderBottom = "1px solid #ddd";
+            div.innerHTML = `
+                <div>
+                    <strong>${c.name}</strong><br>
+                    <small style="color:#666">${c.desc || 'No description'}</small>
+                </div>
+                <div class="action-btns">
+                    <button class="edit-btn" onclick="editCategory(${index})">Edit</button>
+                    <button class="delete-btn" onclick="deleteCategory(${index})">Delete</button>
+                </div>
+            `;
+            list.appendChild(div);
+        });
+
+        // Load Branding Inputs
+        const savedLogo = localStorage.getItem('swamiLogo'); 
+        const savedAbout = localStorage.getItem('swamiAboutBg');
         if(savedLogo) document.getElementById('siteLogo').value = savedLogo;
         if(savedAbout) document.getElementById('aboutBg').value = savedAbout;
     }
 
-    function addNewCategory() {
-        const newCat = document.getElementById('newCatName').value.trim();
-        if(!newCat) return;
-        let cats = JSON.parse(localStorage.getItem('swamiCategories'));
-        if(!cats.includes(newCat)) { cats.push(newCat); localStorage.setItem('swamiCategories', JSON.stringify(cats)); loadCategories(); document.getElementById('newCatName').value = ''; }
+    function handleCategorySubmit() {
+        const name = document.getElementById('catName').value.trim();
+        const desc = document.getElementById('catDesc').value.trim();
+        if(!name) return alert("Category Name is required");
+
+        let cats = JSON.parse(localStorage.getItem('swamiCategories')) || [];
+
+        if(catEditIndex === -1) {
+            // Add New
+            // Check for duplicate
+            if(cats.some(c => c.name === name)) return alert("Category already exists!");
+            cats.push({ name: name, desc: desc });
+            alert("Category Added!");
+        } else {
+            // Update Existing
+            cats[catEditIndex] = { name: name, desc: desc };
+            alert("Category Updated!");
+            cancelCatEdit();
+        }
+
+        localStorage.setItem('swamiCategories', JSON.stringify(cats));
+        loadCategories();
+        document.getElementById('catName').value = '';
+        document.getElementById('catDesc').value = '';
     }
 
+    function editCategory(index) {
+        let cats = JSON.parse(localStorage.getItem('swamiCategories'));
+        catEditIndex = index;
+        document.getElementById('catName').value = cats[index].name;
+        document.getElementById('catDesc').value = cats[index].desc;
+        
+        document.getElementById('catSubmitBtn').innerText = "Update Category";
+        document.getElementById('catSubmitBtn').classList.add('update-btn');
+        document.getElementById('catCancelBtn').style.display = "block";
+        document.getElementById('catFormTitle').style.color = "#007bff";
+    }
+
+    function deleteCategory(index) {
+        if(confirm("Delete this category?")) {
+            let cats = JSON.parse(localStorage.getItem('swamiCategories'));
+            cats.splice(index, 1);
+            localStorage.setItem('swamiCategories', JSON.stringify(cats));
+            loadCategories();
+            if(index === catEditIndex) cancelCatEdit();
+        }
+    }
+
+    function cancelCatEdit() {
+        catEditIndex = -1;
+        document.getElementById('catName').value = '';
+        document.getElementById('catDesc').value = '';
+        document.getElementById('catSubmitBtn').innerText = "+ Add Category";
+        document.getElementById('catSubmitBtn').classList.remove('update-btn');
+        document.getElementById('catCancelBtn').style.display = "none";
+        document.getElementById('catFormTitle').style.color = "#555";
+    }
+
+
+    // --- PACKAGES LOGIC ---
     function handlePackageSubmit() {
         const extras = []; document.querySelectorAll('.extra-img').forEach(input => { if(input.value.trim()) extras.push(input.value.trim()); });
         const newItem = { id: Date.now(), category: document.getElementById('category').value, title: document.getElementById('title').value, price: document.getElementById('price').value, desc: document.getElementById('desc').value, mainImg: document.getElementById('imgMain').value, extraImgs: extras, video: document.getElementById('vidUrl').value };
         if(!newItem.title || !newItem.mainImg) { alert("Title and Main Image are required!"); return; }
         let data = JSON.parse(localStorage.getItem('swamiDataPro')) || [];
-        if (editModeIndex === -1) { data.push(newItem); alert("Package Published!"); } 
-        else { newItem.id = data[editModeIndex].id; data[editModeIndex] = newItem; alert("Package Updated Successfully!"); cancelEdit(); }
+        if (packageEditIndex === -1) { data.push(newItem); alert("Package Published!"); } 
+        else { newItem.id = data[packageEditIndex].id; data[packageEditIndex] = newItem; alert("Package Updated Successfully!"); cancelEdit(); }
         localStorage.setItem('swamiDataPro', JSON.stringify(data)); loadItems(); clearForm();
     }
 
@@ -119,7 +251,7 @@
     }
 
     function editItem(index) {
-        let data = JSON.parse(localStorage.getItem('swamiDataPro')) || []; let item = data[index]; editModeIndex = index;
+        let data = JSON.parse(localStorage.getItem('swamiDataPro')) || []; let item = data[index]; packageEditIndex = index;
         document.getElementById('category').value = item.category; document.getElementById('title').value = item.title; document.getElementById('price').value = item.price; document.getElementById('desc').value = item.desc; document.getElementById('imgMain').value = item.mainImg; document.getElementById('vidUrl').value = item.video || '';
         document.querySelectorAll('.extra-img').forEach(i => i.value = ''); 
         if(item.extraImgs) { item.extraImgs.forEach((img, i) => { if(i < 5) document.getElementById('ex'+(i+1)).value = img; }); }
@@ -129,13 +261,19 @@
     }
 
     function cancelEdit() {
-        editModeIndex = -1; clearForm(); document.getElementById('formTitle').innerText = "3. Add New Package / Album"; document.getElementById('formTitle').style.color = "#555";
+        packageEditIndex = -1; clearForm(); document.getElementById('formTitle').innerText = "3. Add New Package / Album"; document.getElementById('formTitle').style.color = "#555";
         const btn = document.getElementById('submitBtn'); btn.innerText = "PUBLISH PACKAGE"; btn.classList.remove('update-btn'); document.getElementById('cancelBtn').style.display = "none";
     }
 
     function clearForm() { document.getElementById('title').value = ''; document.getElementById('price').value = ''; document.getElementById('desc').value = ''; document.getElementById('imgMain').value = ''; document.getElementById('vidUrl').value = ''; document.querySelectorAll('.extra-img').forEach(i => i.value = ''); }
-    function deleteItem(index) { if(confirm("Are you sure?")) { let data = JSON.parse(localStorage.getItem('swamiDataPro')) || []; data.splice(index, 1); localStorage.setItem('swamiDataPro', JSON.stringify(data)); loadItems(); if(index === editModeIndex) cancelEdit(); }}
-    window.onload = function() { loadCategories(); loadItems(); };
+    function deleteItem(index) { if(confirm("Are you sure?")) { let data = JSON.parse(localStorage.getItem('swamiDataPro')) || []; data.splice(index, 1); localStorage.setItem('swamiDataPro', JSON.stringify(data)); loadItems(); if(index === packageEditIndex) cancelEdit(); }}
+    
+    window.onload = function() { 
+        if(sessionStorage.getItem('swamiAdminAuth') === 'true') {
+            document.getElementById('loginOverlay').style.display = 'none';
+        }
+        loadCategories(); loadItems(); 
+    };
 </script>
 </body>
 </html>
