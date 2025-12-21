@@ -30,11 +30,10 @@
         .card-title { color: var(--accent); font-size: 1.2rem; margin-bottom: 5px; }
         .click-hint { font-size: 0.8rem; color: #888; margin-top: 10px; font-style: italic; }
 
-        /* ABOUT SECTION (Moved to bottom & made bigger) */
+        /* ABOUT SECTION */
         .about-section { 
             background-color: var(--gray); 
             background-size: cover; background-position: center; 
-            /* UPDATED PADDING FOR BIGGER SIZE */
             padding: 120px 5%; 
             text-align: center; margin-top: 40px;
             position: relative;
@@ -43,7 +42,19 @@
         .about-text { max-width: 800px; margin: 0 auto 30px; line-height: 1.8; position: relative; z-index: 2; font-weight: 500; text-shadow: 0 2px 4px rgba(0,0,0,0.8); font-size: 1.1rem; }
         .contact-pill { display: inline-block; background: rgba(0,0,0,0.8); padding: 12px 30px; border-radius: 30px; margin: 10px; font-size: 1rem; border: 1px solid var(--accent); position: relative; z-index: 2; }
 
-        /* FULL SCREEN OVERLAY */
+        /* FOOTER */
+        footer { text-align: center; padding: 20px; margin-top: 20px; border-top: 1px solid #333; color: #777; font-size: 0.9rem; }
+        .footer-link { color: var(--accent); text-decoration: underline; cursor: pointer; }
+
+        /* TERMS OVERLAY */
+        #termsOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 4000; display: none; justify-content: center; align-items: center; }
+        .terms-box { background: #fff; color: #333; width: 90%; max-width: 500px; padding: 30px; border-radius: 10px; position: relative; text-align: left; }
+        .terms-box h2 { color: var(--accent); margin-bottom: 20px; text-align: center; text-transform: uppercase; }
+        .terms-box ul { padding-left: 20px; line-height: 1.8; }
+        .terms-box li { margin-bottom: 10px; }
+        .close-terms { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; cursor: pointer; color: #333; }
+
+        /* GALLERY & BOOKING OVERLAYS */
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; display: none; flex-direction: column; }
         .overlay-header { display: flex; justify-content: space-between; padding: 20px; color: white; }
         .close-btn { font-size: 2rem; cursor: pointer; color: var(--accent); }
@@ -54,7 +65,6 @@
         .overlay-details { padding: 20px; text-align: center; background: #111; }
         .book-now-btn { background: var(--accent); color: black; border: none; padding: 12px 40px; font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-top: 10px; border-radius: 5px; }
 
-        /* BOOKING MODAL (UPDATED) */
         .booking-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; color: black; padding: 30px; border-radius: 10px; z-index: 3000; width: 95%; max-width: 450px; display: none; box-shadow: 0 0 20px rgba(255,153,0,0.5); max-height: 90vh; overflow-y: auto; }
         .booking-label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; color: #333; }
         .booking-input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; font-size: 1rem; }
@@ -85,19 +95,34 @@
         </div>
     </section>
 
+    <footer>
+        &copy; 2025 Swami Studio. All rights reserved. <br>
+        <span class="footer-link" onclick="document.getElementById('termsOverlay').style.display='flex'">Terms & Conditions</span>
+    </footer>
+
+    <div id="termsOverlay">
+        <div class="terms-box">
+            <div class="close-terms" onclick="document.getElementById('termsOverlay').style.display='none'">&times;</div>
+            <h2>Terms & Conditions</h2>
+            <ul>
+                <li>Timings and Location to be shared in WhatsApp.</li>
+                <li>Client needs to pay <strong>₹10,000/-</strong> to secure booking.</li>
+                <li>Balance Payment needs to paid <strong>before shoot</strong>.</li>
+            </ul>
+        </div>
+    </div>
+
     <div class="overlay" id="galleryOverlay">
         <div class="overlay-header">
             <div id="overlayTitle" style="font-size:1.2rem; font-weight:bold;">Package Details</div>
             <div class="close-btn" onclick="closeOverlay()">✕</div>
         </div>
-        
         <div class="gallery-stage">
             <div class="nav-arrow nav-left" onclick="changeSlide(-1)">&#10094;</div>
             <img id="currentSlide" class="main-view-img" src="">
             <video id="currentVideo" class="main-view-img" controls style="display:none;"></video>
             <div class="nav-arrow nav-right" onclick="changeSlide(1)">&#10095;</div>
         </div>
-
         <div class="overlay-details">
             <h3 id="overlayPrice" style="color:var(--accent); margin-bottom:5px;"></h3>
             <p id="overlayDesc" style="color:#ccc; font-size:0.9rem; margin-bottom:15px;"></p>
@@ -107,25 +132,18 @@
 
     <div class="booking-modal" id="bookModal">
         <h3 style="margin-bottom:20px; text-align:center; color: black;">Booking Details</h3>
-        
         <label class="booking-label">Your Name:</label>
         <input type="text" id="clientName" class="booking-input" placeholder="Enter Name">
-
         <label class="booking-label">Phone Number:</label>
         <input type="tel" id="clientPhone" class="booking-input" placeholder="e.g., 9876543210">
-        
         <label class="booking-label">Date of Shoot:</label>
         <input type="date" id="clientDate" class="booking-input">
-
         <label class="booking-label">Preferred Time:</label>
         <input type="time" id="clientTime" class="booking-input">
-
         <label class="booking-label">City / Area:</label>
         <input type="text" id="clientCity" class="booking-input" placeholder="e.g., Mumbai">
-
         <label class="booking-label">Specific Shoot Spot / Details:</label>
         <textarea id="clientSpot" class="booking-input" rows="3" placeholder="e.g., Beach near sunset point..."></textarea>
-
         <button class="confirm-btn" onclick="sendToWhatsapp()">SEND ON WHATSAPP</button>
         <div style="text-align:center; margin-top:15px; cursor:pointer; color:red; font-weight: bold;" onclick="document.getElementById('bookModal').style.display='none'">Cancel</div>
     </div>
@@ -134,20 +152,31 @@
     let allData = []; let currentPackage = null; let currentImageIndex = 0; let currentGalleryList = []; 
 
     window.onload = function() {
-        // Load Branding
         const savedLogo = localStorage.getItem('swamiLogo');
         if(savedLogo) { const img = document.getElementById('navLogo'); img.src = savedLogo; img.style.display = 'block'; }
         const savedAboutBg = localStorage.getItem('swamiAboutBg');
         if(savedAboutBg) { document.querySelector('.about-section').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('${savedAboutBg}')`; }
 
-        // Load Categories
+        // --- UPDATED CATEGORY LOGIC FOR INDEX ---
         let cats = JSON.parse(localStorage.getItem('swamiCategories'));
-        if(!cats) cats = ['Wedding', 'Pre-Wedding', 'Product', 'Events'];
+        // Migration check for Index page safety
+        if (!cats) { 
+            cats = [{name:'Wedding'}, {name:'Pre-Wedding'}, {name:'Product'}, {name:'Events'}]; 
+        } else if (cats.length > 0 && typeof cats[0] === 'string') {
+            cats = cats.map(c => ({ name: c, desc: '' }));
+        }
+
         const catBox = document.getElementById('catContainer');
         const allBtn = document.createElement('button'); allBtn.className = 'cat-btn active'; allBtn.innerText = 'All'; allBtn.onclick = (e) => filterGrid('All', e.target); catBox.appendChild(allBtn);
-        cats.forEach(c => { const btn = document.createElement('button'); btn.className = 'cat-btn'; btn.innerText = c; btn.onclick = (e) => filterGrid(c, e.target); catBox.appendChild(btn); });
+        
+        cats.forEach(c => { 
+            const btn = document.createElement('button'); 
+            btn.className = 'cat-btn'; 
+            btn.innerText = c.name; // Use .name property
+            btn.onclick = (e) => filterGrid(c.name, e.target); 
+            catBox.appendChild(btn); 
+        });
 
-        // Load Data
         allData = JSON.parse(localStorage.getItem('swamiDataPro')) || []; renderGrid(allData);
     };
 
@@ -189,7 +218,6 @@
 
     function openBooking() { document.getElementById('bookModal').style.display = 'block'; }
 
-    // --- UPDATED WHATSAPP SENDING FUNCTION ---
     function sendToWhatsapp() {
         const name = document.getElementById('clientName').value;
         const phone = document.getElementById('clientPhone').value;
@@ -211,7 +239,6 @@
                     `*City:* ${city} %0A` +
                     `*Spot Details:* ${spot} %0A%0A` +
                     `_Sent from Swami Studio Website_`;
-                    
         const url = `https://wa.me/918369910171?text=${msg}`;
         window.open(url, '_blank');
         document.getElementById('bookModal').style.display = 'none';
