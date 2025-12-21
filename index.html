@@ -3,152 +3,267 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swami Studio | Official Website</title>
+    <title>Swami Studio</title>
     <style>
-        /* --- THEME COLORS --- */
-        :root {
-            --primary: #000000;
-            --accent: #FF9900;
-            --text: #ffffff;
-            --card-bg: #1a1a1a;
-        }
+        :root { --primary: #000; --accent: #FF9900; --text: #fff; --gray: #222; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--primary); color: var(--text); padding-bottom: 50px; }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
-        body { background-color: var(--primary); color: var(--text); }
+        /* HEADER */
+        header { background: #000; padding: 15px 5%; border-bottom: 2px solid var(--accent); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .logo-area { display: flex; align-items: center; gap: 15px; }
+        .logo-img { height: 50px; width: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); }
+        .brand-name { font-size: 1.5rem; text-transform: uppercase; letter-spacing: 1px; }
+        .brand-name span { color: var(--accent); }
 
-        /* --- HEADER --- */
-        header {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 15px 5%; border-bottom: 2px solid var(--accent);
-            position: sticky; top: 0; background: black; z-index: 1000;
-        }
-        .logo-container { display: flex; align-items: center; gap: 15px; }
-        .logo-img { height: 60px; border-radius: 50%; border: 2px solid var(--accent); }
-        .logo-text h1 { font-size: 1.5rem; text-transform: uppercase; }
-        .logo-text span { color: var(--accent); }
+        /* ABOUT SECTION */
+        .about-section { background: var(--gray); padding: 40px 5%; text-align: center; margin-bottom: 20px; }
+        .about-section h2 { color: var(--accent); margin-bottom: 15px; text-transform: uppercase; }
+        .contact-pill { display: inline-block; background: #333; padding: 8px 20px; border-radius: 20px; margin: 5px; font-size: 0.9rem; border: 1px solid #444; }
+        .contact-pill span { color: var(--accent); font-weight: bold; }
 
-        /* --- CATEGORIES --- */
-        .categories {
-            display: flex; justify-content: center; gap: 15px;
-            padding: 30px 20px; flex-wrap: wrap; background: #111;
-        }
-        .cat-btn {
-            background: transparent; border: 2px solid var(--accent);
-            color: var(--text); padding: 10px 25px; cursor: pointer;
-            text-transform: uppercase; transition: 0.3s;
-        }
-        .cat-btn:hover, .cat-btn.active { background: var(--accent); color: black; font-weight: bold; }
+        /* CATEGORIES */
+        .cat-scroll { display: flex; gap: 10px; padding: 10px 5%; overflow-x: auto; background: #111; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+        .cat-btn { background: transparent; border: 1px solid var(--accent); color: white; padding: 8px 20px; border-radius: 4px; cursor: pointer; transition: 0.3s; }
+        .cat-btn.active, .cat-btn:hover { background: var(--accent); color: black; font-weight: bold; }
 
-        /* --- GRID --- */
-        .grid-container {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px; padding: 20px 5%; min-height: 50vh;
-        }
-        .package-card {
-            background: var(--card-bg); border: 1px solid #333;
-            border-radius: 8px; overflow: hidden; transition: 0.3s;
-        }
-        .package-card:hover { transform: translateY(-5px); border-color: var(--accent); }
-        .media-container { width: 100%; height: 200px; background: #000; }
-        .media-container img, .media-container video { width: 100%; height: 100%; object-fit: cover; }
-        .card-details { padding: 20px; }
-        .card-title { color: var(--accent); font-size: 1.4rem; margin-bottom: 10px; }
-        .book-btn {
-            display: block; width: 100%; padding: 10px; background: var(--accent);
-            color: black; text-align: center; text-decoration: none; font-weight: bold; margin-top: 15px;
-        }
-        footer { text-align: center; padding: 20px; margin-top: 50px; color: #888; border-top: 1px solid #333; }
+        /* GRID */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; padding: 20px 5%; }
+        .card { background: var(--gray); border-radius: 8px; overflow: hidden; border: 1px solid #333; cursor: pointer; transition: transform 0.2s; position: relative; }
+        .card:hover { transform: scale(1.02); border-color: var(--accent); }
+        .card-img { width: 100%; height: 220px; object-fit: cover; }
+        .card-info { padding: 15px; }
+        .card-title { color: var(--accent); font-size: 1.2rem; margin-bottom: 5px; }
+        .click-hint { font-size: 0.8rem; color: #888; margin-top: 10px; font-style: italic; }
+
+        /* FULL SCREEN OVERLAY */
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; display: none; flex-direction: column; }
+        .overlay-header { display: flex; justify-content: space-between; padding: 20px; color: white; }
+        .close-btn { font-size: 2rem; cursor: pointer; color: var(--accent); }
+        
+        .gallery-stage { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; }
+        .main-view-img { max-width: 90%; max-height: 60vh; border: 2px solid #333; }
+        .nav-arrow { position: absolute; font-size: 3rem; color: var(--accent); cursor: pointer; padding: 0 20px; user-select: none; }
+        .nav-left { left: 10px; } .nav-right { right: 10px; }
+
+        .overlay-details { padding: 20px; text-align: center; background: #111; }
+        .book-now-btn { background: var(--accent); color: black; border: none; padding: 12px 40px; font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-top: 10px; border-radius: 5px; }
+
+        /* BOOKING MODAL */
+        .booking-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; color: black; padding: 30px; border-radius: 10px; z-index: 3000; width: 90%; max-width: 400px; display: none; box-shadow: 0 0 20px rgba(255,153,0,0.5); }
+        .booking-input { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .confirm-btn { width: 100%; background: #25D366; color: white; padding: 12px; border: none; font-weight: bold; cursor: pointer; font-size: 1.1rem; }
+
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo-container">
-            <img src="logo.jpg" alt="Logo" class="logo-img">
-            <div class="logo-text"><h1>Swami <span>Studio</span></h1></div>
+        <div class="logo-area">
+            <img id="navLogo" src="" alt="Logo" class="logo-img" style="display:none;">
+            <div class="brand-name">Swami <span>Studio</span></div>
         </div>
-        <a href="admin.html" style="color: #555; text-decoration:none;">Admin</a>
     </header>
 
-    <div class="categories" id="categoryContainer"></div>
+    <section class="about-section">
+        <h2>About Swami Studio</h2>
+        <p style="max-width: 700px; margin: 0 auto 20px; line-height: 1.6;">
+            We capture your moments and turn them into lifetime memories. Specializing in Weddings, Pre-weddings, Maternity shoots, and Product photography.
+        </p>
+        <div class="contact-pill">📞 +91 836 991 0171</div>
+        <div class="contact-pill">📸 Insta: <span>swami_studio</span></div>
+    </section>
 
-    <div class="grid-container" id="displayArea"></div>
+    <div class="cat-scroll" id="catContainer"></div>
 
-    <footer><p>&copy; 2025 Swami Studio</p></footer>
+    <div class="grid" id="gridArea"></div>
 
-    <script>
-        // 1. SETUP CATEGORY BUTTONS
-        function setupCategories() {
-            let cats = JSON.parse(localStorage.getItem('swamiCategories'));
-            if (!cats) {
-                // If no categories found, set defaults
-                cats = ['Pre-Wedding', 'Wedding', 'Maternity', 'Product'];
-                localStorage.setItem('swamiCategories', JSON.stringify(cats));
-            }
+    <div class="overlay" id="galleryOverlay">
+        <div class="overlay-header">
+            <div id="overlayTitle" style="font-size:1.2rem; font-weight:bold;">Package Details</div>
+            <div class="close-btn" onclick="closeOverlay()">✕</div>
+        </div>
+        
+        <div class="gallery-stage">
+            <div class="nav-arrow nav-left" onclick="changeSlide(-1)">&#10094;</div>
+            <img id="currentSlide" class="main-view-img" src="">
+            <video id="currentVideo" class="main-view-img" controls style="display:none;"></video>
+            <div class="nav-arrow nav-right" onclick="changeSlide(1)">&#10095;</div>
+        </div>
 
-            const container = document.getElementById('categoryContainer');
-            container.innerHTML = '';
+        <div class="overlay-details">
+            <h3 id="overlayPrice" style="color:var(--accent); margin-bottom:5px;"></h3>
+            <p id="overlayDesc" style="color:#ccc; font-size:0.9rem; margin-bottom:15px;"></p>
+            <button class="book-now-btn" onclick="openBooking()">BOOK NOW</button>
+        </div>
+    </div>
 
-            // Add "All Services" button manually first
-            const allBtn = document.createElement('button');
-            allBtn.className = 'cat-btn active';
-            allBtn.innerText = 'All Services';
-            allBtn.onclick = function() { filterPackages('all', this) };
-            container.appendChild(allBtn);
+    <div class="booking-modal" id="bookModal">
+        <h3 style="margin-bottom:20px; text-align:center;">Enter Your Details</h3>
+        <input type="text" id="clientName" class="booking-input" placeholder="Your Name">
+        <input type="date" id="clientDate" class="booking-input">
+        <input type="text" id="clientCity" class="booking-input" placeholder="City / Location">
+        <button class="confirm-btn" onclick="sendToWhatsapp()">SEND ON WHATSAPP</button>
+        <div style="text-align:center; margin-top:15px; cursor:pointer; color:red;" onclick="document.getElementById('bookModal').style.display='none'">Cancel</div>
+    </div>
 
-            // Create buttons for each category
-            cats.forEach(cat => {
-                const btn = document.createElement('button');
-                btn.className = 'cat-btn';
-                btn.innerText = cat;
-                btn.onclick = function() { filterPackages(cat, this) };
-                container.appendChild(btn);
-            });
+<script>
+    let allData = [];
+    let currentPackage = null;
+    let currentImageIndex = 0;
+    let currentGalleryList = []; // Holds [MainImg, ...ExtraImgs]
 
-            // Load all items by default
-            filterPackages('all', allBtn);
+    // --- INITIALIZATION ---
+    window.onload = function() {
+        // Load Logo
+        const savedLogo = localStorage.getItem('swamiLogo');
+        if(savedLogo) {
+            const img = document.getElementById('navLogo');
+            img.src = savedLogo;
+            img.style.display = 'block';
         }
 
-        // 2. DISPLAY LOGIC
-        function filterPackages(category, btnElement) {
-            const data = JSON.parse(localStorage.getItem('swamiStudioData')) || [];
-            const display = document.getElementById('displayArea');
-            display.innerHTML = '';
+        // Load Categories
+        let cats = JSON.parse(localStorage.getItem('swamiCategories'));
+        if(!cats) cats = ['Wedding', 'Pre-Wedding', 'Product', 'Events'];
+        
+        const catBox = document.getElementById('catContainer');
+        
+        // "All" Button
+        const allBtn = document.createElement('button');
+        allBtn.className = 'cat-btn active';
+        allBtn.innerText = 'All';
+        allBtn.onclick = (e) => filterGrid('All', e.target);
+        catBox.appendChild(allBtn);
 
-            // Update button styles
-            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-            if(btnElement) btnElement.classList.add('active');
+        cats.forEach(c => {
+            const btn = document.createElement('button');
+            btn.className = 'cat-btn';
+            btn.innerText = c;
+            btn.onclick = (e) => filterGrid(c, e.target);
+            catBox.appendChild(btn);
+        });
 
-            // Filter data
-            const filtered = category === 'all' ? data : data.filter(item => item.category === category);
+        // Load Data
+        allData = JSON.parse(localStorage.getItem('swamiDataPro')) || [];
+        renderGrid(allData);
+    };
 
-            if(filtered.length === 0) {
-                display.innerHTML = '<p style="color:white; text-align:center; grid-column: 1/-1;">No packages found yet.</p>';
-                return;
-            }
+    // --- GRID LOGIC ---
+    function filterGrid(category, btn) {
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
 
-            // Create Cards
-            filtered.forEach(pkg => {
-                let mediaHtml = pkg.type === 'video' 
-                    ? `<video src="${pkg.url}" controls></video>` 
-                    : `<img src="${pkg.url}" alt="${pkg.title}">`;
-
-                const card = `
-                    <div class="package-card">
-                        <div class="media-container">${mediaHtml}</div>
-                        <div class="card-details">
-                            <h3 class="card-title">${pkg.title}</h3>
-                            <div style="font-weight:bold; margin-bottom:10px;">Price: ₹${pkg.price}</div>
-                            <p style="color:#ccc; font-size:0.9rem;">${pkg.desc}</p>
-                            <a href="https://wa.me/919876543210?text=I am interested in ${pkg.title}" class="book-btn">Book Now</a>
-                        </div>
-                    </div>
-                `;
-                display.innerHTML += card;
-            });
+        if(category === 'All') renderGrid(allData);
+        else {
+            const filtered = allData.filter(item => item.category === category);
+            renderGrid(filtered);
         }
+    }
 
-        window.onload = setupCategories;
-    </script>
+    function renderGrid(data) {
+        const grid = document.getElementById('gridArea');
+        grid.innerHTML = '';
+        if(data.length === 0) { grid.innerHTML = '<p style="text-align:center; grid-column:1/-1; color:#555;">No packages added yet.</p>'; return; }
+
+        data.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.onclick = () => openOverlay(item);
+            card.innerHTML = `
+                <img src="${item.mainImg}" class="card-img" alt="${item.title}">
+                <div class="card-info">
+                    <div class="card-title">${item.title}</div>
+                    <div style="font-weight:bold;">₹${item.price}</div>
+                    <div class="click-hint">Tap to view full gallery &rarr;</div>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    // --- LIGHTBOX / OVERLAY LOGIC ---
+    function openOverlay(item) {
+        currentPackage = item;
+        currentGalleryList = [item.mainImg, ...item.extraImgs]; // Combine main + extras
+        currentImageIndex = 0;
+
+        document.getElementById('overlayTitle').innerText = item.title;
+        document.getElementById('overlayPrice').innerText = 'Price: ₹' + item.price;
+        document.getElementById('overlayDesc').innerText = item.desc;
+        
+        updateSlideDisplay();
+        document.getElementById('galleryOverlay').style.display = 'flex';
+    }
+
+    function closeOverlay() {
+        document.getElementById('galleryOverlay').style.display = 'none';
+        // Stop video if playing
+        const vid = document.getElementById('currentVideo');
+        vid.pause();
+    }
+
+    function changeSlide(direction) {
+        currentImageIndex += direction;
+        
+        // Loop logic
+        // We need to account for video. Let's say video is "last slide" if it exists.
+        let totalSlides = currentGalleryList.length;
+        if(currentPackage.video) totalSlides += 1;
+
+        if (currentImageIndex >= totalSlides) currentImageIndex = 0;
+        if (currentImageIndex < 0) currentImageIndex = totalSlides - 1;
+
+        updateSlideDisplay();
+    }
+
+    function updateSlideDisplay() {
+        const imgEl = document.getElementById('currentSlide');
+        const vidEl = document.getElementById('currentVideo');
+
+        // Check if current index is the Video (it will be the last index)
+        const isVideoIndex = (currentPackage.video && currentImageIndex === currentGalleryList.length);
+
+        if(isVideoIndex) {
+            imgEl.style.display = 'none';
+            vidEl.style.display = 'block';
+            vidEl.src = currentPackage.video;
+        } else {
+            vidEl.style.display = 'none';
+            vidEl.pause(); // Stop video if we switch to image
+            imgEl.style.display = 'block';
+            imgEl.src = currentGalleryList[currentImageIndex];
+        }
+    }
+
+    // --- BOOKING LOGIC ---
+    function openBooking() {
+        document.getElementById('bookModal').style.display = 'block';
+    }
+
+    function sendToWhatsapp() {
+        const name = document.getElementById('clientName').value;
+        const date = document.getElementById('clientDate').value;
+        const city = document.getElementById('clientCity').value;
+
+        if(!name || !city) { alert("Please fill Name and City"); return; }
+
+        // Format Message
+        const msg = `*New Booking Request* %0A%0A` +
+                    `*Package:* ${currentPackage.title} %0A` +
+                    `*Price:* ₹${currentPackage.price} %0A%0A` +
+                    `*Client Name:* ${name} %0A` +
+                    `*Date:* ${date} %0A` +
+                    `*City:* ${city} %0A%0A` +
+                    `_Sent from Swami Studio Website_`;
+
+        // Swami Studio Number: 918369910171
+        const url = `https://wa.me/918369910171?text=${msg}`;
+        
+        window.open(url, '_blank');
+        document.getElementById('bookModal').style.display = 'none';
+    }
+</script>
+
 </body>
 </html>
