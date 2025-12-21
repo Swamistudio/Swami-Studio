@@ -3,200 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | Swami Studio</title>
+    <title>Admin Panel - Swami Studio</title>
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        h2 { border-bottom: 2px solid #D4AF37; padding-bottom: 10px; color: #333; }
+        body { background-color: #f0f0f0; font-family: sans-serif; padding: 20px; }
         
-        .section-box { background: #fafafa; padding: 15px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 8px; }
-        label { font-weight: bold; display: block; margin-top: 10px; }
-        input, button, select, textarea { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         
-        button { background: #D4AF37; color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 15px; }
-        button:hover { background: #b59228; }
+        h2 { border-bottom: 2px solid #FF9900; padding-bottom: 10px; margin-bottom: 20px; }
         
-        /* Secondary button color for file uploads */
-        .upload-btn { background: #333; }
-        .upload-btn:hover { background: #555; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
         
-        .delete-btn { background: #ff4444; margin-top: 5px; }
+        button {
+            background-color: #FF9900; color: white; border: none; padding: 12px 20px;
+            font-size: 1rem; cursor: pointer; width: 100%; font-weight: bold;
+        }
+        button:hover { background-color: #e68a00; }
 
-        /* Login Modal */
-        #login-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; }
-        #login-box { background: white; padding: 40px; text-align: center; border-radius: 8px; width: 300px; }
+        .item-list { margin-top: 40px; }
+        .list-item { 
+            background: #fff; border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; 
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .delete-btn { background: red; width: auto; padding: 5px 10px; font-size: 0.8rem; margin-left: 10px;}
+        
+        .preview-img { width: 50px; height: 50px; object-fit: cover; margin-right: 10px; }
     </style>
 </head>
 <body>
 
-    <div id="login-modal">
-        <div id="login-box">
-            <h2>Admin Login</h2>
-            <input type="password" id="admin-pass" placeholder="Enter Password">
-            <button onclick="checkLogin()">Login</button>
-        </div>
+<div class="container">
+    <h2>Add New Package / Video</h2>
+    
+    <div class="form-group">
+        <label>Category (Where should this show?)</label>
+        <select id="category">
+            <option value="Pre-Wedding">Pre-Wedding</option>
+            <option value="Wedding">Wedding</option>
+            <option value="Maternity">Maternity</option>
+            <option value="Product">Product Shoot</option>
+        </select>
     </div>
 
-    <div class="container" id="admin-panel" style="display:none;">
-        <h1>Swami Studio Control Center 🛠️</h1>
-        <a href="index.html" target="_blank">View Website</a>
-
-        <div class="section-box">
-            <h2>⚙️ General Settings & Logo</h2>
-            
-            <label>Website Tagline:</label>
-            <input type="text" id="set-tagline">
-            
-            <label>Current Theme:</label>
-            <select id="set-theme">
-                <option value="Standard">Standard (Black & Gold)</option>
-                <option value="Diwali">Diwali Festival 🎆</option>
-            </select>
-
-            <label><strong>Upload Logo (Appears next to Name):</strong></label>
-            <input type="file" id="logo-file">
-            <button class="upload-btn" onclick="uploadLogo()">1. Upload & Set Logo</button>
-            <p id="logo-status" style="color:blue; font-size:0.9em;"></p>
-
-            <label>Logo URL (Auto-filled after upload):</label>
-            <input type="text" id="set-logo" placeholder="https://..." readonly>
-
-            <button onclick="saveSettings()">2. Save All Settings</button>
-        </div>
-
-        <div class="section-box">
-            <h2>📸 Gallery Manager</h2>
-            <p>Upload Photo to Gallery:</p>
-            <input type="file" id="photo-file">
-            <button class="upload-btn" onclick="uploadPhoto()">Upload & Add to Gallery</button>
-            <p id="upload-status" style="color:blue;"></p>
-        </div>
-
-        <div class="section-box">
-            <h2>📅 Client Bookings</h2>
-            <div id="bookings-list"></div>
-        </div>
-
-        <div class="section-box">
-            <h2>📝 Add Service</h2>
-            <input type="text" id="serv-name" placeholder="Service Name">
-            <input type="number" id="serv-price" placeholder="Price">
-            <button onclick="addService()">Add Service</button>
-        </div>
-
-         <div class="section-box">
-            <h2>⭐ Add Testimonial</h2>
-            <input type="text" id="test-client" placeholder="Client Name">
-            <textarea id="test-msg" placeholder="What did they say?"></textarea>
-            <button onclick="addTestimonial()">Add Review</button>
-        </div>
+    <div class="form-group">
+        <label>Package Title (e.g., Gold Package)</label>
+        <input type="text" id="title" placeholder="Enter title">
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-        import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+    <div class="form-group">
+        <label>Price (₹)</label>
+        <input type="number" id="price" placeholder="e.g., 25000">
+    </div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyADXKgZ-y4Oo4BjfGfW7euGLCPp623KE-M",
-            authDomain: "swami-studio.firebaseapp.com",
-            databaseURL: "https://swami-studio-default-rtdb.firebaseio.com",
-            projectId: "swami-studio",
-            storageBucket: "swami-studio.firebasestorage.app",
-            messagingSenderId: "680267170622",
-            appId: "1:680267170622:web:2a489e33c206b72b06e26f",
-            measurementId: "G-2K4X9057XG"
+    <div class="form-group">
+        <label>Description (What is included?)</label>
+        <textarea id="desc" rows="3" placeholder="Drone shot, 50 sheets album, etc..."></textarea>
+    </div>
+
+    <div class="form-group">
+        <label>Media Type</label>
+        <select id="type">
+            <option value="image">Image</option>
+            <option value="video">Video</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Image/Video URL (Link)</label>
+        <input type="text" id="url" placeholder="Paste image address or video link here">
+        <small>Tip: Use links from Unsplash or your hosted file links.</small>
+    </div>
+
+    <button onclick="addItem()">Add to Website</button>
+
+    <div class="item-list">
+        <h2>Current Packages</h2>
+        <div id="listContainer"></div>
+    </div>
+    
+    <br>
+    <a href="index.html" target="_blank">View Website -></a>
+</div>
+
+<script>
+    // Save to LocalStorage
+    function addItem() {
+        const newItem = {
+            id: Date.now(),
+            category: document.getElementById('category').value,
+            title: document.getElementById('title').value,
+            price: document.getElementById('price').value,
+            desc: document.getElementById('desc').value,
+            type: document.getElementById('type').value,
+            url: document.getElementById('url').value
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const storage = getStorage(app);
-
-        // --- FUNCTIONS ---
-        window.checkLogin = function() {
-            if(document.getElementById('admin-pass').value === "admin123") {
-                document.getElementById('login-modal').style.display = 'none';
-                document.getElementById('admin-panel').style.display = 'block';
-            } else { alert("Wrong Password!"); }
+        if(!newItem.title || !newItem.url) {
+            alert("Please fill Title and URL");
+            return;
         }
 
-        window.saveSettings = function() {
-            set(ref(db, 'settings'), {
-                tagline: document.getElementById('set-tagline').value,
-                theme: document.getElementById('set-theme').value,
-                logoUrl: document.getElementById('set-logo').value
-            });
-            alert("Settings Updated!");
-        }
+        let data = JSON.parse(localStorage.getItem('swamiStudioData')) || [];
+        data.push(newItem);
+        localStorage.setItem('swamiStudioData', JSON.stringify(data));
+        
+        alert("Package Added Successfully!");
+        location.reload();
+    }
 
-        // NEW: Upload Logo Function
-        window.uploadLogo = function() {
-            const file = document.getElementById('logo-file').files[0];
-            if(!file) return alert("Select a logo file first!");
+    // Load Items List
+    function loadItems() {
+        const data = JSON.parse(localStorage.getItem('swamiStudioData')) || [];
+        const container = document.getElementById('listContainer');
+        container.innerHTML = '';
 
-            const status = document.getElementById('logo-status');
-            status.innerText = "Uploading logo...";
-
-            const storageRef = sRef(storage, 'logos/' + file.name);
-            uploadBytes(storageRef, file).then((snapshot) => {
-                getDownloadURL(snapshot.ref).then((url) => {
-                    // Auto-fill the URL box
-                    document.getElementById('set-logo').value = url;
-                    status.innerText = "Logo Uploaded! Now click 'Save All Settings'.";
-                });
-            }).catch((err) => { status.innerText = "Error: " + err.message; });
-        }
-
-        window.uploadPhoto = function() {
-            const file = document.getElementById('photo-file').files[0];
-            if(!file) return alert("Select a file first!");
-            const status = document.getElementById('upload-status');
-            status.innerText = "Uploading...";
-
-            const storageRef = sRef(storage, 'gallery/' + file.name);
-            uploadBytes(storageRef, file).then((snapshot) => {
-                getDownloadURL(snapshot.ref).then((url) => {
-                    push(ref(db, 'gallery'), { url: url });
-                    status.innerText = "Success! Image added to gallery.";
-                });
-            });
-        }
-
-        window.addService = function() {
-            const name = document.getElementById('serv-name').value;
-            const price = document.getElementById('serv-price').value;
-            if(name && price) { push(ref(db, 'services'), { name: name, price: price }); alert("Service Added"); }
-        }
-
-        window.addTestimonial = function() {
-            const client = document.getElementById('test-client').value;
-            const msg = document.getElementById('test-msg').value;
-            if(client && msg) { push(ref(db, 'testimonials'), { client: client, msg: msg }); alert("Testimonial Added"); }
-        }
-
-        window.deleteBooking = function(id) {
-            if(confirm("Delete this booking?")) remove(ref(db, 'bookings/' + id));
-        }
-
-        // --- LOAD DATA ---
-        onValue(ref(db, 'settings'), (snap) => {
-            const data = snap.val();
-            if(data) {
-                document.getElementById('set-tagline').value = data.tagline || "";
-                document.getElementById('set-theme').value = data.theme || "Standard";
-                document.getElementById('set-logo').value = data.logoUrl || "";
-            }
+        data.forEach((item, index) => {
+            const div = document.createElement('div');
+            div.className = 'list-item';
+            div.innerHTML = `
+                <div style="display:flex; align-items:center;">
+                    <strong>${item.category}:</strong> &nbsp; ${item.title} (₹${item.price})
+                </div>
+                <button class="delete-btn" onclick="deleteItem(${index})">Delete</button>
+            `;
+            container.appendChild(div);
         });
+    }
 
-        onValue(ref(db, 'bookings'), (snap) => {
-            const list = document.getElementById('bookings-list');
-            list.innerHTML = "";
-            if(snap.exists()) {
-                snap.forEach((child) => {
-                    list.innerHTML += `<div style="background:white; padding:10px; border-bottom:1px solid #ccc; margin-bottom:5px;"><strong>${child.val().name}</strong> (${child.val().type})<br>Phone: ${child.val().phone} | Date: ${child.val().date}<br><button class="delete-btn" onclick="deleteBooking('${child.key}')">Remove</button></div>`;
-                });
-            } else { list.innerHTML = "<p>No bookings yet.</p>"; }
-        });
-    </script>
+    function deleteItem(index) {
+        let data = JSON.parse(localStorage.getItem('swamiStudioData')) || [];
+        data.splice(index, 1);
+        localStorage.setItem('swamiStudioData', JSON.stringify(data));
+        loadItems();
+    }
+
+    window.onload = loadItems;
+</script>
+
 </body>
 </html>
