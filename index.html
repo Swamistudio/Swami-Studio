@@ -17,10 +17,15 @@
         .brand-name span { color: var(--accent); }
 
         /* ABOUT SECTION */
-        .about-section { background: var(--gray); padding: 40px 5%; text-align: center; margin-bottom: 20px; }
-        .about-section h2 { color: var(--accent); margin-bottom: 15px; text-transform: uppercase; }
-        .contact-pill { display: inline-block; background: #333; padding: 8px 20px; border-radius: 20px; margin: 5px; font-size: 0.9rem; border: 1px solid #444; }
-        .contact-pill span { color: var(--accent); font-weight: bold; }
+        .about-section { 
+            background-color: var(--gray); 
+            background-size: cover; background-position: center; 
+            padding: 60px 5%; text-align: center; margin-bottom: 20px; 
+            position: relative;
+        }
+        .about-section h2 { color: var(--accent); margin-bottom: 15px; text-transform: uppercase; position: relative; z-index: 2; }
+        .about-text { max-width: 700px; margin: 0 auto 20px; line-height: 1.6; position: relative; z-index: 2; font-weight: 500; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .contact-pill { display: inline-block; background: rgba(0,0,0,0.8); padding: 8px 20px; border-radius: 20px; margin: 5px; font-size: 0.9rem; border: 1px solid var(--accent); position: relative; z-index: 2; }
 
         /* CATEGORIES */
         .cat-scroll { display: flex; gap: 10px; padding: 10px 5%; overflow-x: auto; background: #111; white-space: nowrap; -webkit-overflow-scrolling: touch; }
@@ -40,12 +45,10 @@
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; display: none; flex-direction: column; }
         .overlay-header { display: flex; justify-content: space-between; padding: 20px; color: white; }
         .close-btn { font-size: 2rem; cursor: pointer; color: var(--accent); }
-        
         .gallery-stage { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; }
         .main-view-img { max-width: 90%; max-height: 60vh; border: 2px solid #333; }
         .nav-arrow { position: absolute; font-size: 3rem; color: var(--accent); cursor: pointer; padding: 0 20px; user-select: none; }
         .nav-left { left: 10px; } .nav-right { right: 10px; }
-
         .overlay-details { padding: 20px; text-align: center; background: #111; }
         .book-now-btn { background: var(--accent); color: black; border: none; padding: 12px 40px; font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-top: 10px; border-radius: 5px; }
 
@@ -67,7 +70,7 @@
 
     <section class="about-section">
         <h2>About Swami Studio</h2>
-        <p style="max-width: 700px; margin: 0 auto 20px; line-height: 1.6;">
+        <p class="about-text">
             We capture your moments and turn them into lifetime memories. Specializing in Weddings, Pre-weddings, Maternity shoots, and Product photography.
         </p>
         <div class="contact-pill">📞 +91 836 991 0171</div>
@@ -111,11 +114,10 @@
     let allData = [];
     let currentPackage = null;
     let currentImageIndex = 0;
-    let currentGalleryList = []; // Holds [MainImg, ...ExtraImgs]
+    let currentGalleryList = []; 
 
-    // --- INITIALIZATION ---
     window.onload = function() {
-        // Load Logo
+        // 1. Load Logo
         const savedLogo = localStorage.getItem('swamiLogo');
         if(savedLogo) {
             const img = document.getElementById('navLogo');
@@ -123,13 +125,19 @@
             img.style.display = 'block';
         }
 
-        // Load Categories
+        // 2. Load About Us Background (New Feature)
+        const savedAboutBg = localStorage.getItem('swamiAboutBg');
+        if(savedAboutBg) {
+            const aboutSection = document.querySelector('.about-section');
+            // Adding a dark overlay so white text is readable
+            aboutSection.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('${savedAboutBg}')`;
+        }
+
+        // 3. Load Categories
         let cats = JSON.parse(localStorage.getItem('swamiCategories'));
         if(!cats) cats = ['Wedding', 'Pre-Wedding', 'Product', 'Events'];
         
         const catBox = document.getElementById('catContainer');
-        
-        // "All" Button
         const allBtn = document.createElement('button');
         allBtn.className = 'cat-btn active';
         allBtn.innerText = 'All';
@@ -144,16 +152,14 @@
             catBox.appendChild(btn);
         });
 
-        // Load Data
+        // 4. Load Data
         allData = JSON.parse(localStorage.getItem('swamiDataPro')) || [];
         renderGrid(allData);
     };
 
-    // --- GRID LOGIC ---
     function filterGrid(category, btn) {
         document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-
         if(category === 'All') renderGrid(allData);
         else {
             const filtered = allData.filter(item => item.category === category);
@@ -182,46 +188,35 @@
         });
     }
 
-    // --- LIGHTBOX / OVERLAY LOGIC ---
     function openOverlay(item) {
         currentPackage = item;
-        currentGalleryList = [item.mainImg, ...item.extraImgs]; // Combine main + extras
+        currentGalleryList = [item.mainImg, ...item.extraImgs]; 
         currentImageIndex = 0;
-
         document.getElementById('overlayTitle').innerText = item.title;
         document.getElementById('overlayPrice').innerText = 'Price: ₹' + item.price;
         document.getElementById('overlayDesc').innerText = item.desc;
-        
         updateSlideDisplay();
         document.getElementById('galleryOverlay').style.display = 'flex';
     }
 
     function closeOverlay() {
         document.getElementById('galleryOverlay').style.display = 'none';
-        // Stop video if playing
         const vid = document.getElementById('currentVideo');
         vid.pause();
     }
 
     function changeSlide(direction) {
         currentImageIndex += direction;
-        
-        // Loop logic
-        // We need to account for video. Let's say video is "last slide" if it exists.
         let totalSlides = currentGalleryList.length;
         if(currentPackage.video) totalSlides += 1;
-
         if (currentImageIndex >= totalSlides) currentImageIndex = 0;
         if (currentImageIndex < 0) currentImageIndex = totalSlides - 1;
-
         updateSlideDisplay();
     }
 
     function updateSlideDisplay() {
         const imgEl = document.getElementById('currentSlide');
         const vidEl = document.getElementById('currentVideo');
-
-        // Check if current index is the Video (it will be the last index)
         const isVideoIndex = (currentPackage.video && currentImageIndex === currentGalleryList.length);
 
         if(isVideoIndex) {
@@ -230,36 +225,22 @@
             vidEl.src = currentPackage.video;
         } else {
             vidEl.style.display = 'none';
-            vidEl.pause(); // Stop video if we switch to image
+            vidEl.pause(); 
             imgEl.style.display = 'block';
             imgEl.src = currentGalleryList[currentImageIndex];
         }
     }
 
-    // --- BOOKING LOGIC ---
-    function openBooking() {
-        document.getElementById('bookModal').style.display = 'block';
-    }
+    function openBooking() { document.getElementById('bookModal').style.display = 'block'; }
 
     function sendToWhatsapp() {
         const name = document.getElementById('clientName').value;
         const date = document.getElementById('clientDate').value;
         const city = document.getElementById('clientCity').value;
-
         if(!name || !city) { alert("Please fill Name and City"); return; }
 
-        // Format Message
-        const msg = `*New Booking Request* %0A%0A` +
-                    `*Package:* ${currentPackage.title} %0A` +
-                    `*Price:* ₹${currentPackage.price} %0A%0A` +
-                    `*Client Name:* ${name} %0A` +
-                    `*Date:* ${date} %0A` +
-                    `*City:* ${city} %0A%0A` +
-                    `_Sent from Swami Studio Website_`;
-
-        // Swami Studio Number: 918369910171
+        const msg = `*New Booking Request* %0A%0A*Package:* ${currentPackage.title} %0A*Price:* ₹${currentPackage.price} %0A%0A*Client Name:* ${name} %0A*Date:* ${date} %0A*City:* ${city} %0A%0A_Sent from Swami Studio Website_`;
         const url = `https://wa.me/918369910171?text=${msg}`;
-        
         window.open(url, '_blank');
         document.getElementById('bookModal').style.display = 'none';
     }
