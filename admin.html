@@ -24,8 +24,20 @@
         /* LISTS */
         .list-item { background: #fff; border-bottom: 1px solid #eee; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
         .action-btns { display: flex; gap: 10px; }
-        .delete-btn { background: #ff4444; color: white; border:none; padding: 5px 15px; cursor:pointer; border-radius:4px; }
-        .edit-btn { background: #007bff; color: white; border:none; padding: 5px 15px; cursor:pointer; border-radius:4px; }
+        
+        /* DELETE BUTTON STYLE */
+        .delete-btn { 
+            background: #ff4444; 
+            color: white; 
+            border: none; 
+            padding: 8px 15px; 
+            cursor: pointer; 
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .delete-btn:hover { background: #cc0000; }
+
+        .edit-btn { background: #007bff; color: white; border:none; padding: 8px 15px; cursor:pointer; border-radius:4px; font-weight: bold;}
 
         /* LOGIN SCREEN STYLE */
         #loginOverlay {
@@ -57,6 +69,9 @@
     <button class="main-btn" onclick="saveBranding()" style="background:#333;">Update Branding</button>
 
     <h2 id="catFormTitle">2. Manage Categories</h2>
+    
+    <div id="categoryListContainer" style="margin-bottom: 20px; background: #fafafa; padding: 15px; border-radius: 8px; border: 1px solid #ddd;"></div>
+
     <div class="grid-inputs">
         <div class="form-group">
             <label>Category Name</label>
@@ -69,8 +84,6 @@
     </div>
     <button id="catSubmitBtn" class="main-btn" onclick="handleCategorySubmit()">+ Add Category</button>
     <button id="catCancelBtn" class="cancel-btn" onclick="cancelCatEdit()">Cancel Edit</button>
-
-    <div id="categoryListContainer" style="margin-top: 20px; background: #fafafa; padding: 10px; border-radius: 8px;"></div>
 
     <h2 id="formTitle">3. Add New Package / Album</h2>
     <div class="form-group"><label>Select Category</label><select id="category"></select></div>
@@ -120,11 +133,11 @@
         alert("Branding Updated Successfully!");
     }
 
-    // --- CATEGORIES LOGIC (NEW) ---
+    // --- CATEGORIES LOGIC ---
     function loadCategories() {
         let cats = JSON.parse(localStorage.getItem('swamiCategories'));
         
-        // MIGRATION: If user has old format (array of strings), convert to objects
+        // MIGRATION: Handle old data format
         if (!cats) { 
             cats = [{name:'Wedding', desc:''}, {name:'Pre-Wedding', desc:''}]; 
             localStorage.setItem('swamiCategories', JSON.stringify(cats));
@@ -133,7 +146,7 @@
             localStorage.setItem('swamiCategories', JSON.stringify(cats));
         }
 
-        // 1. Populate Dropdown for Packages
+        // 1. Populate Dropdown
         const select = document.getElementById('category'); 
         select.innerHTML = '';
         cats.forEach(c => { 
@@ -143,9 +156,13 @@
             select.appendChild(opt); 
         });
 
-        // 2. Populate List for Editing
+        // 2. Populate List with DELETE button
         const list = document.getElementById('categoryListContainer');
         list.innerHTML = '';
+        if(cats.length === 0) {
+            list.innerHTML = "No categories found.";
+        }
+        
         cats.forEach((c, index) => {
             const div = document.createElement('div');
             div.className = 'list-item';
@@ -179,7 +196,6 @@
 
         if(catEditIndex === -1) {
             // Add New
-            // Check for duplicate
             if(cats.some(c => c.name === name)) return alert("Category already exists!");
             cats.push({ name: name, desc: desc });
             alert("Category Added!");
@@ -209,7 +225,7 @@
     }
 
     function deleteCategory(index) {
-        if(confirm("Delete this category?")) {
+        if(confirm("Are you sure you want to DELETE this category?")) {
             let cats = JSON.parse(localStorage.getItem('swamiCategories'));
             cats.splice(index, 1);
             localStorage.setItem('swamiCategories', JSON.stringify(cats));
