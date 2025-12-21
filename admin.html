@@ -6,10 +6,9 @@
     <title>Admin Panel - Swami Studio</title>
     <style>
         body { background-color: #f0f0f0; font-family: sans-serif; padding: 20px; }
-        
         .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        
-        h2 { border-bottom: 2px solid #FF9900; padding-bottom: 10px; margin-bottom: 20px; }
+        h2 { border-bottom: 2px solid #FF9900; padding-bottom: 10px; margin-bottom: 20px; margin-top: 30px;}
+        .section-box { background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 20px;}
         
         .form-group { margin-bottom: 15px; }
         label { display: block; font-weight: bold; margin-bottom: 5px; }
@@ -17,77 +16,122 @@
         
         button {
             background-color: #FF9900; color: white; border: none; padding: 12px 20px;
-            font-size: 1rem; cursor: pointer; width: 100%; font-weight: bold;
+            font-size: 1rem; cursor: pointer; width: 100%; font-weight: bold; border-radius: 5px;
         }
         button:hover { background-color: #e68a00; }
+        button.delete-btn { background: red; width: auto; padding: 5px 10px; font-size: 0.8rem; margin-left: 10px;}
 
-        .item-list { margin-top: 40px; }
         .list-item { 
             background: #fff; border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; 
             display: flex; justify-content: space-between; align-items: center;
         }
-        .delete-btn { background: red; width: auto; padding: 5px 10px; font-size: 0.8rem; margin-left: 10px;}
-        
-        .preview-img { width: 50px; height: 50px; object-fit: cover; margin-right: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Add New Package / Video</h2>
-    
-    <div class="form-group">
-        <label>Category (Where should this show?)</label>
-        <select id="category">
-            <option value="Pre-Wedding">Pre-Wedding</option>
-            <option value="Wedding">Wedding</option>
-            <option value="Maternity">Maternity</option>
-            <option value="Product">Product Shoot</option>
-        </select>
+    <h1>Swami Studio Admin</h1>
+
+    <div class="section-box">
+        <h2>1. Create New Category</h2>
+        <div class="form-group">
+            <label>New Category Name (e.g. Birthday, Candid)</label>
+            <input type="text" id="newCatName" placeholder="Enter category name...">
+        </div>
+        <button onclick="addNewCategory()">Create Category</button>
+        <p style="margin-top:10px; font-size:0.9rem;"><strong>Active Categories:</strong> <span id="activeCats"></span></p>
     </div>
 
-    <div class="form-group">
-        <label>Package Title (e.g., Gold Package)</label>
-        <input type="text" id="title" placeholder="Enter title">
-    </div>
+    <div class="section-box">
+        <h2>2. Add New Package / Video</h2>
+        
+        <div class="form-group">
+            <label>Select Category</label>
+            <select id="category">
+                </select>
+        </div>
 
-    <div class="form-group">
-        <label>Price (₹)</label>
-        <input type="number" id="price" placeholder="e.g., 25000">
-    </div>
+        <div class="form-group">
+            <label>Package Title</label>
+            <input type="text" id="title" placeholder="e.g., Gold Package">
+        </div>
 
-    <div class="form-group">
-        <label>Description (What is included?)</label>
-        <textarea id="desc" rows="3" placeholder="Drone shot, 50 sheets album, etc..."></textarea>
-    </div>
+        <div class="form-group">
+            <label>Price (₹)</label>
+            <input type="number" id="price" placeholder="e.g., 25000">
+        </div>
 
-    <div class="form-group">
-        <label>Media Type</label>
-        <select id="type">
-            <option value="image">Image</option>
-            <option value="video">Video</option>
-        </select>
-    </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="desc" rows="3" placeholder="Details..."></textarea>
+        </div>
 
-    <div class="form-group">
-        <label>Image/Video URL (Link)</label>
-        <input type="text" id="url" placeholder="Paste image address or video link here">
-        <small>Tip: Use links from Unsplash or your hosted file links.</small>
-    </div>
+        <div class="form-group">
+            <label>Media Type</label>
+            <select id="type">
+                <option value="image">Image</option>
+                <option value="video">Video</option>
+            </select>
+        </div>
 
-    <button onclick="addItem()">Add to Website</button>
+        <div class="form-group">
+            <label>Image/Video URL</label>
+            <input type="text" id="url" placeholder="Paste link here">
+        </div>
+
+        <button onclick="addItem()">Add to Website</button>
+    </div>
 
     <div class="item-list">
-        <h2>Current Packages</h2>
+        <h2>3. Current Packages</h2>
         <div id="listContainer"></div>
     </div>
     
     <br>
-    <a href="index.html" target="_blank">View Website -></a>
+    <a href="index.html" target="_blank" style="display:block; text-align:center; font-weight:bold; color:#FF9900;">OPEN WEBSITE -></a>
 </div>
 
 <script>
-    // Save to LocalStorage
+    // 1. MANAGE CATEGORIES
+    function loadCategories() {
+        let cats = JSON.parse(localStorage.getItem('swamiCategories'));
+        // Default categories if none exist
+        if (!cats) {
+            cats = ['Pre-Wedding', 'Wedding', 'Maternity', 'Product'];
+            localStorage.setItem('swamiCategories', JSON.stringify(cats));
+        }
+        
+        // Update Dropdown
+        const select = document.getElementById('category');
+        select.innerHTML = '';
+        cats.forEach(c => {
+            let opt = document.createElement('option');
+            opt.value = c;
+            opt.innerHTML = c;
+            select.appendChild(opt);
+        });
+
+        // Update Text Display
+        document.getElementById('activeCats').innerText = cats.join(', ');
+    }
+
+    function addNewCategory() {
+        const newCat = document.getElementById('newCatName').value.trim();
+        if(!newCat) return alert("Please type a name");
+
+        let cats = JSON.parse(localStorage.getItem('swamiCategories'));
+        if(!cats.includes(newCat)) {
+            cats.push(newCat);
+            localStorage.setItem('swamiCategories', JSON.stringify(cats));
+            alert("Category Added!");
+            document.getElementById('newCatName').value = '';
+            loadCategories();
+        } else {
+            alert("Category already exists");
+        }
+    }
+
+    // 2. MANAGE PACKAGES (Same as before)
     function addItem() {
         const newItem = {
             id: Date.now(),
@@ -112,7 +156,6 @@
         location.reload();
     }
 
-    // Load Items List
     function loadItems() {
         const data = JSON.parse(localStorage.getItem('swamiStudioData')) || [];
         const container = document.getElementById('listContainer');
@@ -122,9 +165,7 @@
             const div = document.createElement('div');
             div.className = 'list-item';
             div.innerHTML = `
-                <div style="display:flex; align-items:center;">
-                    <strong>${item.category}:</strong> &nbsp; ${item.title} (₹${item.price})
-                </div>
+                <div><strong>${item.category}:</strong> ${item.title} (₹${item.price})</div>
                 <button class="delete-btn" onclick="deleteItem(${index})">Delete</button>
             `;
             container.appendChild(div);
@@ -138,7 +179,11 @@
         loadItems();
     }
 
-    window.onload = loadItems;
+    // Initialize
+    window.onload = function() {
+        loadCategories();
+        loadItems();
+    };
 </script>
 
 </body>
