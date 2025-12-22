@@ -16,11 +16,13 @@
         
         button { background: #D4AF37; color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 20px; transition: 0.2s; font-size: 16px; }
         button:hover { background: #b59228; }
-        .upload-btn { background: #222; }
-        .delete-btn { background: #ff4444; width: auto; padding: 5px 10px; float: right; font-size: 12px; margin-left: 10px; }
         
-        /* Category Tags */
-        .cat-tag { display: inline-block; background: #eee; padding: 5px 10px; border-radius: 20px; margin: 5px; font-size: 14px; }
+        /* Category Styles */
+        .cat-item { background: #f9f9f9; padding: 15px; margin-bottom: 10px; border-left: 4px solid #D4AF37; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+        .cat-info { flex-grow: 1; }
+        .cat-actions button { width: auto; margin: 0 0 0 5px; padding: 5px 10px; font-size: 12px; }
+        .btn-edit { background: #333; }
+        .btn-delete { background: #ff4444; }
 
         /* Login Modal */
         #login-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 999; }
@@ -43,14 +45,21 @@
 
         <div class="section-box" style="background: #fdfdfd; border-left: 5px solid #D4AF37;">
             <h2>📂 Manage Categories</h2>
-            <p style="color:#666; margin-top:0;">Create categories like "Wedding", "Pre-wedding", "Drone" here.</p>
+            <p style="color:#666; margin-top:0;">Create, Edit, and Save Descriptions for your Categories.</p>
             
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="new-cat-name" placeholder="New Category Name">
-                <button onclick="addCategory()" style="width:30%; margin-top:5px; background:#333;">Add</button>
-            </div>
+            <input type="hidden" id="edit-cat-id">
 
-            <div id="category-list-display" style="margin-top:15px;">
+            <label>Category Name:</label>
+            <input type="text" id="cat-name" placeholder="e.g. Wedding Photography">
+
+            <label>Category Description (Permanent):</label>
+            <textarea id="cat-desc" placeholder="e.g. Capturing your big day with cinematic style..." style="height:60px;"></textarea>
+            
+            <button onclick="saveCategory()" id="btn-save-cat" style="background:#333;">➕ Add Category</button>
+            <button onclick="cancelEdit()" id="btn-cancel-cat" style="background:#999; display:none;">Cancel Edit</button>
+
+            <h3 style="margin-top:20px; color:#555;">Existing Categories:</h3>
+            <div id="category-list-display">
                 </div>
         </div>
 
@@ -65,44 +74,41 @@
                 <option value="">Loading categories...</option>
             </select>
 
-            <label>3. Description:</label>
-            <textarea id="pf-desc" placeholder="Write details about the shoot..." style="height:80px;"></textarea>
+            <label>3. Project Description:</label>
+            <textarea id="pf-desc" placeholder="Write details about THIS specific shoot..." style="height:80px;"></textarea>
 
-            <label>4. Main Cover Image (Required):</label>
+            <label>4. Main Cover Image:</label>
             <input type="file" id="pf-main-img">
 
-            <label>5. Extra Gallery Images (Optional - Max 5):</label>
+            <label>5. Extra Gallery Images (Max 5):</label>
             <input type="file" id="pf-sub-imgs" multiple accept="image/*">
-            <small style="color:#666;">Hold CTRL to select multiple images.</small>
 
             <label>6. Video (Optional):</label>
             <input type="file" id="pf-video" accept="video/*">
 
-            <button class="upload-btn" onclick="uploadFullProject()">🚀 Upload Full Project</button>
-            
+            <button onclick="uploadFullProject()">🚀 Upload Full Project</button>
             <p id="upload-status" style="color:blue; margin-top:15px; font-weight:bold;"></p>
         </div>
 
         <div class="section-box">
-            <h2>📅 Bookings</h2>
-            <div id="bookings-list">Loading...</div>
+            <h2>📝 Services</h2>
+            <input type="text" id="serv-name" placeholder="Name"><input type="number" id="serv-price" placeholder="Price">
+            <button onclick="addService()">Add Service</button>
+            <div id="services-list" style="margin-top:10px;"></div>
         </div>
         
         <div class="section-box">
-            <h2>📝 Services</h2>
-            <input type="text" id="serv-name" placeholder="Service Name"><input type="number" id="serv-price" placeholder="Price">
-            <button onclick="addService()">Add Service</button>
-            <div id="services-list" style="margin-top:10px;"></div>
+            <h2>📅 Bookings</h2>
+            <div id="bookings-list">Loading...</div>
         </div>
 
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
         import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-        // YOUR CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyADXKgZ-y4Oo4BjfGfW7euGLCPp623KE-M",
             authDomain: "swami-studio.firebaseapp.com",
@@ -126,20 +132,46 @@
             } else { alert("Wrong Password"); }
         }
 
-        // --- 1. CATEGORY MANAGER ---
-        window.addCategory = function() {
-            const name = document.getElementById('new-cat-name').value;
-            if(name) {
-                push(ref(db, 'categories'), { name: name });
-                document.getElementById('new-cat-name').value = "";
+        // --- 1. CATEGORY MANAGER (Add & Edit) ---
+        window.saveCategory = function() {
+            const id = document.getElementById('edit-cat-id').value; // Check if editing
+            const name = document.getElementById('cat-name').value;
+            const desc = document.getElementById('cat-desc').value;
+
+            if(!name) return alert("Category Name is required");
+
+            if(id) {
+                // UPDATE Existing
+                update(ref(db, 'categories/' + id), { name: name, description: desc })
+                .then(() => { alert("Category Updated!"); cancelEdit(); });
+            } else {
+                // ADD New
+                push(ref(db, 'categories'), { name: name, description: desc })
+                .then(() => { alert("Category Added!"); cancelEdit(); });
             }
         }
 
-        window.deleteCategory = function(id) {
-            if(confirm("Delete this category?")) remove(ref(db, 'categories/' + id));
+        // Triggered when clicking "Edit" button
+        window.editCategory = function(id, name, desc) {
+            document.getElementById('edit-cat-id').value = id;
+            document.getElementById('cat-name').value = name;
+            document.getElementById('cat-desc').value = desc;
+            
+            document.getElementById('btn-save-cat').innerText = "💾 Update Category";
+            document.getElementById('btn-save-cat').style.background = "#D4AF37";
+            document.getElementById('btn-cancel-cat').style.display = "inline-block";
         }
 
-        // Load Categories into List AND Dropdown
+        window.cancelEdit = function() {
+            document.getElementById('edit-cat-id').value = "";
+            document.getElementById('cat-name').value = "";
+            document.getElementById('cat-desc').value = "";
+            document.getElementById('btn-save-cat').innerText = "➕ Add Category";
+            document.getElementById('btn-save-cat').style.background = "#333";
+            document.getElementById('btn-cancel-cat').style.display = "none";
+        }
+
+        // Load Categories
         onValue(ref(db, 'categories'), (snap) => {
             const listDiv = document.getElementById('category-list-display');
             const selectBox = document.getElementById('pf-cat-select');
@@ -149,112 +181,94 @@
 
             if(snap.exists()) {
                 snap.forEach(child => {
-                    // Update "Manage Categories" List
-                    listDiv.innerHTML += `
-                        <span class="cat-tag">
-                            ${child.val().name} 
-                            <a href="#" onclick="deleteCategory('${child.key}')" style="color:red; text-decoration:none; margin-left:5px;">✖</a>
-                        </span>`;
+                    const c = child.val();
+                    const id = child.key;
                     
-                    // Update "Upload" Dropdown
-                    selectBox.innerHTML += `<option value="${child.val().name}">${child.val().name}</option>`;
+                    // Add to List with Edit Button
+                    // passing data to editCategory safely
+                    const safeDesc = c.description ? c.description.replace(/"/g, '&quot;') : "";
+                    
+                    listDiv.innerHTML += `
+                        <div class="cat-item">
+                            <div class="cat-info">
+                                <strong>${c.name}</strong><br>
+                                <small style="color:#666;">${c.description || "No description"}</small>
+                            </div>
+                            <div class="cat-actions">
+                                <button class="btn-edit" onclick='editCategory("${id}", "${c.name}", "${safeDesc}")'>Edit</button>
+                                <button class="btn-delete" onclick="remove(ref(db, 'categories/${id}'))">Delete</button>
+                            </div>
+                        </div>`;
+                    
+                    // Add to Dropdown
+                    selectBox.innerHTML += `<option value="${c.name}">${c.name}</option>`;
                 });
             }
         });
 
-        // --- 2. ADVANCED UPLOAD LOGIC ---
+        // --- 2. UPLOAD LOGIC ---
         window.uploadFullProject = async function() {
             const status = document.getElementById('upload-status');
-            
-            // Get Inputs
             const title = document.getElementById('pf-title').value;
             const category = document.getElementById('pf-cat-select').value;
             const desc = document.getElementById('pf-desc').value;
             const mainFile = document.getElementById('pf-main-img').files[0];
-            const subFiles = document.getElementById('pf-sub-imgs').files; // List of files
+            const subFiles = document.getElementById('pf-sub-imgs').files;
             const videoFile = document.getElementById('pf-video').files[0];
 
-            if(!mainFile || !category) return alert("Category and Main Image are required!");
+            if(!mainFile || !category) return alert("Category & Main Image Required");
 
-            status.innerText = "⏳ Starting Upload...";
+            status.innerText = "⏳ Uploading...";
 
             try {
-                // A. Upload Main Image
-                status.innerText = "1/4 Uploading Main Image...";
-                const mainSnap = await uploadBytes(sRef(storage, 'projects/' + mainFile.name), mainFile);
+                // Main Image
+                const mainSnap = await uploadBytes(sRef(storage, 'projects/'+mainFile.name), mainFile);
                 const mainUrl = await getDownloadURL(mainSnap.ref);
 
-                // B. Upload Sub Images (Loop)
+                // Sub Images
                 let subUrls = [];
-                if(subFiles.length > 0) {
-                    status.innerText = `2/4 Uploading ${subFiles.length} Extra Photos...`;
-                    for(let i=0; i<subFiles.length; i++) {
-                        if(i >= 5) break; // Limit to 5
-                        const subSnap = await uploadBytes(sRef(storage, 'projects/' + subFiles[i].name), subFiles[i]);
-                        const url = await getDownloadURL(subSnap.ref);
-                        subUrls.push(url);
-                    }
+                for(let i=0; i<subFiles.length && i<5; i++) {
+                    const snap = await uploadBytes(sRef(storage, 'projects/'+subFiles[i].name), subFiles[i]);
+                    subUrls.push(await getDownloadURL(snap.ref));
                 }
 
-                // C. Upload Video
+                // Video
                 let videoUrl = "";
                 if(videoFile) {
-                    status.innerText = "3/4 Uploading Video (This may take time)...";
-                    const vidSnap = await uploadBytes(sRef(storage, 'projects/' + videoFile.name), videoFile);
-                    videoUrl = await getDownloadURL(vidSnap.ref);
+                    const vSnap = await uploadBytes(sRef(storage, 'projects/'+videoFile.name), videoFile);
+                    videoUrl = await getDownloadURL(vSnap.ref);
                 }
 
-                // D. Save Everything to Database
-                status.innerText = "4/4 Saving Data...";
+                // Save
                 await push(ref(db, 'gallery'), {
-                    title: title,
-                    category: category,
-                    description: desc,
-                    mainImage: mainUrl,
-                    subImages: subUrls, // Array of URLs
-                    video: videoUrl,
-                    timestamp: Date.now()
+                    title, category, description: desc, mainImage: mainUrl, subImages: subUrls, video: videoUrl, timestamp: Date.now()
                 });
 
-                status.innerText = "✅ Project Uploaded Successfully!";
-                alert("Upload Complete!");
-                // Reset form
-                document.getElementById('pf-title').value = "";
-                document.getElementById('pf-desc').value = "";
-                document.getElementById('pf-main-img').value = "";
-                document.getElementById('pf-sub-imgs').value = "";
-                document.getElementById('pf-video').value = "";
-
-            } catch (error) {
-                console.error(error);
-                status.innerText = "❌ Error: " + error.message;
-            }
+                status.innerText = "✅ Success!";
+                alert("Project Uploaded!");
+                window.location.reload(); // Refresh to clear
+            } catch(err) { status.innerText = "Error: " + err.message; }
         }
 
-        // --- SERVICES & BOOKINGS (Existing Logic) ---
+        // --- SERVICES & BOOKINGS ---
         window.addService = function() {
             const name = document.getElementById('serv-name').value;
             const price = document.getElementById('serv-price').value;
-            if(name && price) push(ref(db, 'services'), { name, price });
+            if(name) push(ref(db, 'services'), { name, price });
         }
-        onValue(ref(db, 'services'), (snap) => {
-            document.getElementById('services-list').innerHTML = "";
-            if(snap.exists()) snap.forEach(c => {
-                document.getElementById('services-list').innerHTML += `<div>${c.val().name} - ₹${c.val().price} <button class="delete-btn" onclick="remove(ref(db, 'services/${c.key}'))">X</button></div>`;
-            });
-        });
         
-        window.remove = remove; window.ref = ref; window.db = db; // Global helper for inline remove
+        // Helpers
+        window.remove = remove; window.ref = ref; window.db = db;
 
-        onValue(ref(db, 'bookings'), (snap) => {
-            const list = document.getElementById('bookings-list');
-            list.innerHTML = "";
-            if(snap.exists()) snap.forEach(c => {
-                const b = c.val();
-                list.innerHTML += `<div style="background:#eee; padding:10px; margin-bottom:5px;"><strong>${b.name}</strong> (${b.type})<br>${b.date} | ${b.phone} <button class="delete-btn" onclick="remove(ref(db, 'bookings/${c.key}'))">Delete</button></div>`;
-            });
+        onValue(ref(db, 'services'), snap => {
+            document.getElementById('services-list').innerHTML = "";
+            if(snap.exists()) snap.forEach(c => document.getElementById('services-list').innerHTML += `<div>${c.val().name} ₹${c.val().price} <button class="btn-delete" onclick="remove(ref(db,'services/${c.key}'))">X</button></div>`);
         });
 
+        onValue(ref(db, 'bookings'), snap => {
+            document.getElementById('bookings-list').innerHTML = "";
+            if(snap.exists()) snap.forEach(c => document.getElementById('bookings-list').innerHTML += `<div style="background:#eee; padding:5px; margin-bottom:5px;">${c.val().name} | ${c.val().date} <button class="btn-delete" onclick="remove(ref(db,'bookings/${c.key}'))">X</button></div>`);
+        });
     </script>
 </body>
 </html>
