@@ -6,23 +6,36 @@
     <title>Swami Studio | Pro Admin</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f4f6f9; padding: 20px; color: #333; }
-        .container { max-width: 900px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .container { max-width: 950px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         
         h2 { border-bottom: 2px solid #D4AF37; padding-bottom: 10px; color: #333; margin-top: 0; }
-        .section-box { background: #fff; padding: 25px; margin-bottom: 25px; border: 1px solid #e1e4e8; border-radius: 8px; }
+        .section-box { background: #fff; padding: 25px; margin-bottom: 30px; border: 1px solid #e1e4e8; border-radius: 8px; position: relative; }
         
         label { font-weight: 600; display: block; margin-top: 15px; margin-bottom: 5px; color: #444; }
         input, button, select, textarea { width: 100%; padding: 12px; margin-top: 5px; box-sizing: border-box; border-radius: 6px; border: 1px solid #ccc; }
         
-        button { background: #D4AF37; color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 20px; transition: 0.2s; font-size: 16px; }
+        /* Buttons */
+        button { background: #D4AF37; color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 20px; transition: 0.2s; font-size: 15px; }
         button:hover { background: #b59228; }
         
-        /* Category Styles */
-        .cat-item { background: #f9f9f9; padding: 15px; margin-bottom: 10px; border-left: 4px solid #D4AF37; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
-        .cat-info { flex-grow: 1; }
-        .cat-actions button { width: auto; margin: 0 0 0 5px; padding: 5px 10px; font-size: 12px; }
-        .btn-edit { background: #333; }
-        .btn-delete { background: #ff4444; }
+        .btn-edit { background: #333; width: auto; padding: 6px 15px; font-size: 13px; margin-right: 5px; margin-top: 0; }
+        .btn-edit:hover { background: #555; }
+        
+        .btn-delete { background: #e74c3c; width: auto; padding: 6px 15px; font-size: 13px; margin-top: 0; }
+        .btn-delete:hover { background: #c0392b; }
+
+        .btn-cancel { background: #95a5a6; color: white; display: none; margin-left: 10px; }
+
+        /* Inventory List Style */
+        .inv-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .inv-table th { text-align: left; background: #eee; padding: 10px; font-size: 14px; }
+        .inv-table td { padding: 12px 10px; border-bottom: 1px solid #eee; font-size: 14px; }
+        .inv-table tr:hover { background: #f9f9f9; }
+
+        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        .st-avail { background: #d4edda; color: #155724; } /* Green */
+        .st-use { background: #fff3cd; color: #856404; } /* Yellow */
+        .st-repair { background: #f8d7da; color: #721c24; } /* Red */
 
         /* Login Modal */
         #login-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 999; }
@@ -43,51 +56,87 @@
         <h1 style="text-align:center;">Swami Studio Admin</h1>
         <a href="index.html" target="_blank" style="display:block; text-align:center; margin-bottom:30px; color:#666;">View Live Website ↗</a>
 
-        <div class="section-box" style="background: #fdfdfd; border-left: 5px solid #D4AF37;">
-            <h2>📂 Manage Categories</h2>
-            <p style="color:#666; margin-top:0;">Create, Edit, and Save Descriptions for your Categories.</p>
+        <div class="section-box" id="inventory-section" style="border-left: 5px solid #2ecc71;">
+            <h2>📦 Inventory Manager</h2>
+            <p style="color:#666; margin-top:0;">Add your equipment. Click "Edit" in the list below to update an item.</p>
             
-            <input type="hidden" id="edit-cat-id">
+            <input type="hidden" id="inv-edit-id">
 
-            <label>Category Name:</label>
-            <input type="text" id="cat-name" placeholder="e.g. Wedding Photography">
-
-            <label>Category Description (Permanent):</label>
-            <textarea id="cat-desc" placeholder="e.g. Capturing your big day with cinematic style..." style="height:60px;"></textarea>
-            
-            <button onclick="saveCategory()" id="btn-save-cat" style="background:#333;">➕ Add Category</button>
-            <button onclick="cancelEdit()" id="btn-cancel-cat" style="background:#999; display:none;">Cancel Edit</button>
-
-            <h3 style="margin-top:20px; color:#555;">Existing Categories:</h3>
-            <div id="category-list-display">
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <div style="flex:2; min-width: 200px;">
+                    <label style="margin-top:0;">Item Name</label>
+                    <input type="text" id="inv-name" placeholder="e.g. Sony A7III Camera" style="margin-top:0;">
                 </div>
+                
+                <div style="flex:1; min-width: 120px;">
+                    <label style="margin-top:0;">Type</label>
+                    <select id="inv-type" style="margin-top:0;">
+                        <option value="Camera">Camera</option>
+                        <option value="Lens">Lens</option>
+                        <option value="Light">Light/Flash</option>
+                        <option value="Drone">Drone</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div style="width:100px;">
+                    <label style="margin-top:0;">Qty</label>
+                    <input type="number" id="inv-qty" placeholder="1" style="margin-top:0;">
+                </div>
+                
+                <div style="flex:1; min-width: 120px;">
+                    <label style="margin-top:0;">Status</label>
+                    <select id="inv-status" style="margin-top:0;">
+                        <option value="Available">Available</option>
+                        <option value="In Use">In Use (Shoot)</option>
+                        <option value="Repair">In Repair</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-top:15px;">
+                <button onclick="saveInventory()" id="btn-save-inv" style="background:#2ecc71; color:white; width:auto; padding-left:30px; padding-right:30px;">➕ Add Item</button>
+                <button onclick="cancelInvEdit()" id="btn-cancel-inv" class="btn-cancel">Cancel Edit</button>
+            </div>
+
+            <hr style="margin-top:30px; border:0; border-top:1px solid #eee;">
+
+            <h3>Current Equipment List:</h3>
+            <table class="inv-table">
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Type</th>
+                        <th>Qty</th>
+                        <th>Status</th>
+                        <th style="text-align:right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="inventory-list">
+                    </tbody>
+            </table>
+        </div>
+
+        <div class="section-box" style="border-left: 5px solid #D4AF37;">
+            <h2>📂 Categories</h2>
+            <input type="hidden" id="edit-cat-id">
+            <input type="text" id="cat-name" placeholder="Category Name">
+            <textarea id="cat-desc" placeholder="Description" style="height:50px;"></textarea>
+            <button onclick="saveCategory()" id="btn-save-cat">➕ Add Category</button>
+            <button onclick="cancelCatEdit()" id="btn-cancel-cat" style="display:none; background:#999;">Cancel</button>
+            <div id="category-list-display" style="margin-top:15px;"></div>
         </div>
 
         <div class="section-box">
-            <h2>📸 Add New Project / Album</h2>
-            
-            <label>1. Client Name / Title:</label>
-            <input type="text" id="pf-title" placeholder="e.g. Rahul & Priya Wedding">
-
-            <label>2. Select Category:</label>
-            <select id="pf-cat-select">
-                <option value="">Loading categories...</option>
-            </select>
-
-            <label>3. Project Description:</label>
-            <textarea id="pf-desc" placeholder="Write details about THIS specific shoot..." style="height:80px;"></textarea>
-
-            <label>4. Main Cover Image:</label>
-            <input type="file" id="pf-main-img">
-
-            <label>5. Extra Gallery Images (Max 5):</label>
-            <input type="file" id="pf-sub-imgs" multiple accept="image/*">
-
-            <label>6. Video (Optional):</label>
-            <input type="file" id="pf-video" accept="video/*">
-
-            <button onclick="uploadFullProject()">🚀 Upload Full Project</button>
-            <p id="upload-status" style="color:blue; margin-top:15px; font-weight:bold;"></p>
+            <h2>📸 Upload New Project</h2>
+            <input type="text" id="pf-title" placeholder="Client Name">
+            <select id="pf-cat-select"><option value="">Loading categories...</option></select>
+            <textarea id="pf-desc" placeholder="Project details..." style="height:60px;"></textarea>
+            <label>Main Photo:</label><input type="file" id="pf-main-img">
+            <label>Extra Photos:</label><input type="file" id="pf-sub-imgs" multiple>
+            <label>Video:</label><input type="file" id="pf-video">
+            <button onclick="uploadFullProject()">🚀 Upload Project</button>
+            <p id="upload-status" style="color:blue; margin-top:10px;"></p>
         </div>
 
         <div class="section-box">
@@ -99,9 +148,8 @@
         
         <div class="section-box">
             <h2>📅 Bookings</h2>
-            <div id="bookings-list">Loading...</div>
+            <div id="bookings-list"></div>
         </div>
-
     </div>
 
     <script type="module">
@@ -132,81 +180,140 @@
             } else { alert("Wrong Password"); }
         }
 
-        // --- 1. CATEGORY MANAGER (Add & Edit) ---
-        window.saveCategory = function() {
-            const id = document.getElementById('edit-cat-id').value; // Check if editing
-            const name = document.getElementById('cat-name').value;
-            const desc = document.getElementById('cat-desc').value;
+        // --- 1. INVENTORY LOGIC (SMART EDIT) ---
+        window.saveInventory = function() {
+            const id = document.getElementById('inv-edit-id').value;
+            const name = document.getElementById('inv-name').value;
+            const type = document.getElementById('inv-type').value;
+            const qty = document.getElementById('inv-qty').value;
+            const status = document.getElementById('inv-status').value;
 
-            if(!name) return alert("Category Name is required");
+            if(!name || !qty) return alert("Please fill Name and Quantity");
+
+            const data = { name, type, qty, status };
 
             if(id) {
-                // UPDATE Existing
-                update(ref(db, 'categories/' + id), { name: name, description: desc })
-                .then(() => { alert("Category Updated!"); cancelEdit(); });
+                // UPDATE Existing Item
+                update(ref(db, 'inventory/' + id), data).then(() => {
+                    alert("Inventory Updated!");
+                    cancelInvEdit();
+                });
             } else {
-                // ADD New
-                push(ref(db, 'categories'), { name: name, description: desc })
-                .then(() => { alert("Category Added!"); cancelEdit(); });
+                // ADD New Item
+                push(ref(db, 'inventory'), data).then(() => {
+                    // Alert is optional here, usually automatic is better
+                    document.getElementById('inv-name').value = "";
+                    document.getElementById('inv-qty').value = "";
+                });
             }
         }
 
-        // Triggered when clicking "Edit" button
+        // Triggered when user clicks "Edit" in the list
+        window.editInventory = function(id, name, type, qty, status) {
+            // 1. Fill the form at the top
+            document.getElementById('inv-edit-id').value = id;
+            document.getElementById('inv-name').value = name;
+            document.getElementById('inv-type').value = type;
+            document.getElementById('inv-qty').value = qty;
+            document.getElementById('inv-status').value = status;
+
+            // 2. Change buttons
+            document.getElementById('btn-save-inv').innerText = "💾 Update Item";
+            document.getElementById('btn-cancel-inv').style.display = "inline-block";
+
+            // 3. Scroll to top so user sees the form
+            document.getElementById('inventory-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        window.cancelInvEdit = function() {
+            document.getElementById('inv-edit-id').value = "";
+            document.getElementById('inv-name').value = "";
+            document.getElementById('inv-qty').value = "";
+            
+            document.getElementById('btn-save-inv').innerText = "➕ Add Item";
+            document.getElementById('btn-cancel-inv').style.display = "none";
+        }
+
+        // Load Inventory List
+        onValue(ref(db, 'inventory'), (snap) => {
+            const list = document.getElementById('inventory-list');
+            list.innerHTML = "";
+            if(snap.exists()) {
+                snap.forEach(child => {
+                    const c = child.val();
+                    const safeName = c.name.replace(/'/g, "\\'"); 
+                    
+                    // Determine Color Badge
+                    let badgeClass = "st-avail";
+                    if(c.status === "In Use") badgeClass = "st-use";
+                    if(c.status === "Repair") badgeClass = "st-repair";
+
+                    list.innerHTML += `
+                        <tr>
+                            <td><strong>${c.name}</strong></td>
+                            <td>${c.type}</td>
+                            <td>${c.qty}</td>
+                            <td><span class="status-badge ${badgeClass}">${c.status}</span></td>
+                            <td style="text-align:right;">
+                                <button class="btn-edit" onclick="editInventory('${child.key}', '${safeName}', '${c.type}', '${c.qty}', '${c.status}')">Edit</button>
+                                <button class="btn-delete" onclick="remove(ref(db, 'inventory/${child.key}'))">Del</button>
+                            </td>
+                        </tr>`;
+                });
+            } else {
+                list.innerHTML = "<tr><td colspan='5' style='text-align:center;'>No items yet.</td></tr>";
+            }
+        });
+
+        // --- 2. CATEGORY MANAGER ---
+        window.saveCategory = function() {
+            const id = document.getElementById('edit-cat-id').value;
+            const name = document.getElementById('cat-name').value;
+            const desc = document.getElementById('cat-desc').value;
+            if(!name) return alert("Name required");
+            if(id) update(ref(db, 'categories/'+id), { name, description: desc }).then(()=>cancelCatEdit());
+            else push(ref(db, 'categories'), { name, description: desc }).then(()=>cancelCatEdit());
+        }
+
         window.editCategory = function(id, name, desc) {
             document.getElementById('edit-cat-id').value = id;
             document.getElementById('cat-name').value = name;
             document.getElementById('cat-desc').value = desc;
-            
-            document.getElementById('btn-save-cat').innerText = "💾 Update Category";
-            document.getElementById('btn-save-cat').style.background = "#D4AF37";
+            document.getElementById('btn-save-cat').innerText = "Update";
             document.getElementById('btn-cancel-cat').style.display = "inline-block";
         }
 
-        window.cancelEdit = function() {
+        window.cancelCatEdit = function() {
             document.getElementById('edit-cat-id').value = "";
             document.getElementById('cat-name').value = "";
             document.getElementById('cat-desc').value = "";
             document.getElementById('btn-save-cat').innerText = "➕ Add Category";
-            document.getElementById('btn-save-cat').style.background = "#333";
             document.getElementById('btn-cancel-cat').style.display = "none";
         }
 
-        // Load Categories
         onValue(ref(db, 'categories'), (snap) => {
-            const listDiv = document.getElementById('category-list-display');
-            const selectBox = document.getElementById('pf-cat-select');
-            
-            listDiv.innerHTML = "";
-            selectBox.innerHTML = "<option value=''>Select Category...</option>";
+            const div = document.getElementById('category-list-display');
+            const select = document.getElementById('pf-cat-select');
+            div.innerHTML = "";
+            select.innerHTML = "<option value=''>Select Category...</option>";
 
             if(snap.exists()) {
                 snap.forEach(child => {
                     const c = child.val();
-                    const id = child.key;
-                    
-                    // Add to List with Edit Button
-                    // passing data to editCategory safely
                     const safeDesc = c.description ? c.description.replace(/"/g, '&quot;') : "";
-                    
-                    listDiv.innerHTML += `
-                        <div class="cat-item">
-                            <div class="cat-info">
-                                <strong>${c.name}</strong><br>
-                                <small style="color:#666;">${c.description || "No description"}</small>
-                            </div>
-                            <div class="cat-actions">
-                                <button class="btn-edit" onclick='editCategory("${id}", "${c.name}", "${safeDesc}")'>Edit</button>
-                                <button class="btn-delete" onclick="remove(ref(db, 'categories/${id}'))">Delete</button>
-                            </div>
-                        </div>`;
-                    
-                    // Add to Dropdown
-                    selectBox.innerHTML += `<option value="${c.name}">${c.name}</option>`;
+                    div.innerHTML += `<div style="background:#eee; padding:8px; margin-bottom:5px; display:flex; justify-content:space-between;">
+                        <span><strong>${c.name}</strong> - ${c.description || ""}</span>
+                        <span>
+                            <button class="btn-edit" onclick='editCategory("${child.key}", "${c.name}", "${safeDesc}")'>Edit</button>
+                            <button class="btn-delete" onclick="remove(ref(db, 'categories/${child.key}'))">X</button>
+                        </span>
+                    </div>`;
+                    select.innerHTML += `<option value="${c.name}">${c.name}</option>`;
                 });
             }
         });
 
-        // --- 2. UPLOAD LOGIC ---
+        // --- 3. UPLOAD LOGIC ---
         window.uploadFullProject = async function() {
             const status = document.getElementById('upload-status');
             const title = document.getElementById('pf-title').value;
@@ -217,47 +324,41 @@
             const videoFile = document.getElementById('pf-video').files[0];
 
             if(!mainFile || !category) return alert("Category & Main Image Required");
-
             status.innerText = "⏳ Uploading...";
 
             try {
-                // Main Image
                 const mainSnap = await uploadBytes(sRef(storage, 'projects/'+mainFile.name), mainFile);
                 const mainUrl = await getDownloadURL(mainSnap.ref);
 
-                // Sub Images
                 let subUrls = [];
                 for(let i=0; i<subFiles.length && i<5; i++) {
                     const snap = await uploadBytes(sRef(storage, 'projects/'+subFiles[i].name), subFiles[i]);
                     subUrls.push(await getDownloadURL(snap.ref));
                 }
 
-                // Video
                 let videoUrl = "";
                 if(videoFile) {
                     const vSnap = await uploadBytes(sRef(storage, 'projects/'+videoFile.name), videoFile);
                     videoUrl = await getDownloadURL(vSnap.ref);
                 }
 
-                // Save
                 await push(ref(db, 'gallery'), {
                     title, category, description: desc, mainImage: mainUrl, subImages: subUrls, video: videoUrl, timestamp: Date.now()
                 });
 
                 status.innerText = "✅ Success!";
                 alert("Project Uploaded!");
-                window.location.reload(); // Refresh to clear
+                window.location.reload(); 
             } catch(err) { status.innerText = "Error: " + err.message; }
         }
 
-        // --- SERVICES & BOOKINGS ---
+        // --- 4. SERVICES & BOOKINGS ---
         window.addService = function() {
             const name = document.getElementById('serv-name').value;
             const price = document.getElementById('serv-price').value;
             if(name) push(ref(db, 'services'), { name, price });
         }
         
-        // Helpers
         window.remove = remove; window.ref = ref; window.db = db;
 
         onValue(ref(db, 'services'), snap => {
