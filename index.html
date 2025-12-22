@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        /* --- THEME & VARIABLES --- */
+        /* --- THEME --- */
         :root {
             --gold: #D4AF37;
             --black: #0f0f0f;
@@ -22,68 +22,78 @@
         a { text-decoration: none; color: inherit; }
 
         /* --- NAVBAR --- */
-        nav { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 15px 5%; background: var(--dark); border-bottom: 1px solid var(--gold); 
-            position: sticky; top: 0; z-index: 1000;
-        }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: var(--dark); border-bottom: 1px solid var(--gold); position: sticky; top: 0; z-index: 100; }
         .brand { display: flex; align-items: center; gap: 15px; }
         .logo-img { height: 50px; border-radius: 50%; border: 2px solid var(--gold); display: none; }
-        .nav-links a { color: var(--white); margin-left: 20px; font-weight: bold; font-size: 0.9rem; transition: 0.3s; }
-        .nav-links a:hover { color: var(--gold); }
+        .nav-links a { color: var(--white); margin-left: 20px; font-weight: bold; transition: 0.3s; }
 
-        /* --- HERO --- */
-        .hero { 
-            height: 70vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; 
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'); 
-            background-size: cover; background-position: center; 
-        }
-        .btn-gold { 
-            padding: 12px 30px; border: 2px solid var(--gold); color: var(--gold); 
-            background: transparent; cursor: pointer; text-transform: uppercase; font-weight: bold; margin-top: 20px; transition: 0.3s; 
-        }
-        .btn-gold:hover { background: var(--gold); color: var(--black); }
-
-        /* --- PRODUCT / GALLERY GRID (JIJA STYLE) --- */
-        .section { padding: 60px 5%; }
+        /* --- PRODUCT GRID (UNIFORM SIZE) --- */
+        .section { padding: 40px 5%; }
         .grid-container { 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-            gap: 25px; margin-top: 30px; 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+            gap: 30px; margin-top: 30px; 
         }
         
         .product-card {
             background: #222; border: 1px solid #333; border-radius: 8px; overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex; flex-direction: column; height: 100%; /* Force equal height */
+            transition: transform 0.3s;
         }
-        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2); }
+        .product-card:hover { transform: translateY(-5px); border-color: var(--gold); }
         
-        .card-img { 
-            width: 100%; height: 250px; object-fit: cover; border-bottom: 3px solid var(--gold); 
+        .card-img-container {
+            width: 100%; height: 250px; overflow: hidden; position: relative; cursor: pointer;
         }
+        .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+        .product-card:hover .card-img { transform: scale(1.1); }
         
-        .card-info { padding: 15px; text-align: center; }
-        .card-cat { color: #888; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        .card-info { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
         .card-title { font-size: 1.2rem; margin: 5px 0; color: white; }
-        .card-price { color: var(--gold); font-size: 1.3rem; font-weight: bold; margin: 10px 0; }
-        .card-desc { font-size: 0.9rem; color: #aaa; margin-bottom: 15px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-
+        .card-price { color: var(--gold); font-size: 1.3rem; font-weight: bold; margin: 5px 0; }
+        
         .btn-book { 
-            display: block; width: 100%; padding: 10px; background: #333; 
+            margin-top: auto; width: 100%; padding: 12px; background: #333; 
             color: white; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; 
+            border-top: 1px solid var(--gold);
         }
         .btn-book:hover { background: var(--gold); color: black; }
 
-        /* --- CONTACT FORM --- */
-        input, select, textarea { 
-            width: 100%; padding: 12px; margin-bottom: 10px; background: #333; 
-            border: 1px solid #555; color: white; border-radius: 4px; box-sizing: border-box;
+        /* --- FULL SCREEN LIGHTBOX --- */
+        #lightbox {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 2000; justify-content: center; align-items: center;
+            flex-direction: column; overflow-y: auto; /* Allows scrolling if desc is long */
         }
+        .lb-content { position: relative; width: 90%; max-width: 800px; text-align: center; margin-top: 50px; }
+        .lb-media { max-width: 100%; max-height: 60vh; border: 2px solid var(--gold); }
+        
+        .lb-desc-box { 
+            background: #222; padding: 20px; margin-top: 20px; text-align: left; border-radius: 8px; 
+            max-height: 200px; overflow-y: auto; /* Scroll description */
+        }
+        
+        .lb-nav { position: absolute; top: 40%; transform: translateY(-50%); font-size: 3rem; color: var(--gold); cursor: pointer; user-select: none; }
+        .lb-prev { left: -50px; } .lb-next { right: -50px; }
+        .lb-close { position: absolute; top: 20px; right: 30px; font-size: 2.5rem; color: white; cursor: pointer; }
 
-        /* --- RESPONSIVE --- */
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2rem; }
-            .grid-container { grid-template-columns: 1fr; }
+        /* --- BOOKING FORM MODAL --- */
+        #booking-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 3000; justify-content: center; align-items: center;
         }
+        .form-box {
+            background: #1a1a1a; padding: 30px; border-radius: 10px; border: 2px solid var(--gold);
+            width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;
+        }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .full-width { grid-column: span 2; }
+        
+        input, select, textarea { 
+            width: 100%; padding: 10px; background: #333; border: 1px solid #555; 
+            color: white; border-radius: 4px; box-sizing: border-box;
+        }
+        label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: #ccc; }
+
     </style>
 </head>
 <body>
@@ -93,50 +103,89 @@
             <img id="nav-logo" src="" alt="Logo" class="logo-img">
             <h2 id="nav-text" style="margin:0;">SWAMI STUDIO</h2>
         </div>
-        <div class="nav-links">
-            <a href="#gallery">Portfolio</a>
-            <a href="#contact" style="color:var(--gold);">Book Now</a>
-        </div>
     </nav>
 
-    <header class="hero">
-        <h1 id="hero-title">Welcome to Swami Studio</h1>
-        <p id="hero-tagline" style="font-size: 1.2rem; margin-top: 10px; color:#ddd;">Loading...</p>
-        <a href="#contact" class="btn-gold">Book a Shoot</a>
-    </header>
-
-    <section class="section" id="gallery">
-        <h2 style="text-align: center; border-bottom: 2px solid var(--gold); display:inline-block; padding-bottom:10px;">Our Services & Projects</h2>
-        <p style="text-align:center; color:#888;">Explore our latest work and packages</p>
-        
+    <section class="section">
+        <h2 style="text-align: center;">Our Packages</h2>
         <div id="gallery-grid" class="grid-container">
-            <p style="text-align:center; width:100%;">Loading projects...</p>
+            <p style="text-align:center;">Loading projects...</p>
         </div>
     </section>
 
-    <section class="section" id="contact" style="background: var(--dark);">
-        <h2 style="text-align: center;">Book Your Date</h2>
-        <form id="bookingForm" style="max-width: 500px; margin: 0 auto;">
-            <input type="text" id="c-name" placeholder="Your Name" required>
-            <input type="tel" id="c-phone" placeholder="Phone Number" required>
-            <select id="c-type">
-                <option>Wedding Photography</option>
-                <option>Pre-Wedding</option>
-                <option>Modeling Portfolio</option>
-                <option>Product Shoot</option>
-            </select>
-            <input type="date" id="c-date" required>
-            <button type="submit" class="btn-gold" style="width: 100%;">Send Request</button>
-        </form>
-    </section>
+    <div id="lightbox">
+        <span class="lb-close" onclick="closeLightbox()">&times;</span>
+        <div class="lb-content">
+            <span class="lb-nav lb-prev" onclick="changeSlide(-1)">&#10094;</span>
+            <div id="lb-media-container">
+                </div>
+            <span class="lb-nav lb-next" onclick="changeSlide(1)">&#10095;</span>
+            
+            <div class="lb-desc-box">
+                <h3 id="lb-title">Project Title</h3>
+                <p id="lb-desc">Description goes here...</p>
+            </div>
+        </div>
+    </div>
 
-    <footer style="text-align: center; padding: 20px; border-top: 1px solid #333; margin-top: 50px;">
-        <p>&copy; 2024 Swami Studio. All rights reserved.</p>
-    </footer>
+    <div id="booking-modal">
+        <div class="form-box">
+            <h2 style="text-align: center; margin-top: 0;">Book <span id="bk-title-display"></span></h2>
+            <p style="text-align:center; color:var(--gold); margin-bottom: 20px;">Price: <span id="bk-price-display"></span></p>
+            
+            <form id="finalBookingForm">
+                <div class="form-grid">
+                    <div class="full-width">
+                        <label>Full Name</label>
+                        <input type="text" id="b-name" required>
+                    </div>
+                    
+                    <div>
+                        <label>Phone</label>
+                        <input type="tel" id="b-phone" required>
+                    </div>
+                    <div>
+                        <label>Date</label>
+                        <input type="date" id="b-date" required>
+                    </div>
+
+                    <div>
+                        <label>Time</label>
+                        <input type="time" id="b-time" required>
+                    </div>
+                    <div>
+                        <label>Spot/Venue</label>
+                        <input type="text" id="b-spot" placeholder="e.g. Hotel Taj">
+                    </div>
+
+                    <div class="full-width">
+                        <label>Address</label>
+                        <textarea id="b-address" rows="2" required></textarea>
+                    </div>
+
+                    <div>
+                        <label>Pincode</label>
+                        <input type="number" id="b-pin" required>
+                    </div>
+                    
+                    <div>
+                        <label>State</label>
+                        <select id="b-state">
+                            <option value="Maharashtra">Maharashtra</option>
+                            </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-book" style="margin-top: 20px; background: #25D366; color: white;">
+                    <i class="fab fa-whatsapp"></i> Place Booking on WhatsApp
+                </button>
+                <button type="button" onclick="closeBooking()" style="width:100%; background:transparent; border:none; color:#888; margin-top:10px; cursor:pointer;">Cancel</button>
+            </form>
+        </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyADXKgZ-y4Oo4BjfGfW7euGLCPp623KE-M",
@@ -152,80 +201,152 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // 1. LOAD SETTINGS (Logo, Title, Tagline)
-        const settingsRef = ref(db, 'settings');
-        onValue(settingsRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                if(data.tagline) document.getElementById('hero-tagline').innerText = data.tagline;
-                if(data.logoUrl) {
-                    const logo = document.getElementById('nav-logo');
-                    logo.src = data.logoUrl;
-                    logo.style.display = 'block';
-                }
-            }
-        });
+        // Global Variables
+        window.projectsData = {}; // Store all project data here
+        let currentMedia = []; // For lightbox
+        let currentIndex = 0;
+        let selectedPrice = 0; // For booking logic
 
-        // 2. LOAD PROJECTS / GALLERY (With Prices!)
-        const galleryRef = ref(db, 'gallery');
-        onValue(galleryRef, (snapshot) => {
-            const galleryDiv = document.getElementById('gallery-grid');
-            galleryDiv.innerHTML = ""; // Clear loading text
-            
+        // 1. LOAD DATA
+        onValue(ref(db, 'gallery'), (snapshot) => {
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = "";
+            window.projectsData = {}; 
+
             if(snapshot.exists()){
-                // Loop through every project you added in Admin
                 snapshot.forEach((child) => {
+                    const id = child.key;
                     const p = child.val();
-                    
-                    // Default values if missing
-                    const title = p.title || "Untitled Project";
-                    const cat = p.category || "General";
-                    const price = p.price ? `₹${p.price}` : "Contact for Price";
-                    const img = p.mainImage || "https://via.placeholder.com/300x200?text=No+Image";
-                    const desc = p.description || "";
+                    window.projectsData[id] = p; // Store for lightbox
 
-                    // Create the HTML Card
-                    const cardHTML = `
+                    const price = p.price || 0;
+                    const displayPrice = price > 0 ? `₹${price}` : "Contact for Price";
+                    
+                    grid.innerHTML += `
                         <div class="product-card">
-                            <img src="${img}" class="card-img" alt="${title}">
+                            <div class="card-img-container" onclick="openLightbox('${id}')">
+                                <img src="${p.mainImage}" class="card-img" alt="${p.title}">
+                                <div style="position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.7); color:white; padding:5px; font-size:12px; border-radius:4px;">
+                                    <i class="fas fa-images"></i> View Gallery
+                                </div>
+                            </div>
                             <div class="card-info">
-                                <span class="card-cat">${cat}</span>
-                                <h3 class="card-title">${title}</h3>
-                                <p class="card-desc">${desc}</p>
-                                <div class="card-price">${price}</div>
-                                <button class="btn-book" onclick="bookThis('${title}')">Book Now</button>
+                                <small style="color:#888;">${p.category}</small>
+                                <h3 class="card-title">${p.title}</h3>
+                                <div class="card-price">${displayPrice}</div>
+                                <button class="btn-book" onclick="openBooking('${id}', ${price})">Book Now</button>
                             </div>
                         </div>
                     `;
-                    galleryDiv.innerHTML += cardHTML;
                 });
-            } else {
-                galleryDiv.innerHTML = "<p style='text-align:center; width:100%;'>No projects added yet.</p>";
-            }
+            } else { grid.innerHTML = "<p>No packages found.</p>"; }
         });
 
-        // 3. BOOKING FUNCTION (Auto-fills the form)
-        window.bookThis = function(serviceName) {
-            document.getElementById('c-type').value = serviceName; // Set dropdown to this service
-            document.getElementById('contact').scrollIntoView({ behavior: 'smooth' }); // Scroll down
+        // 2. LIGHTBOX FUNCTIONS
+        window.openLightbox = function(id) {
+            const p = window.projectsData[id];
+            currentMedia = [];
+            
+            // Collect all media (Main + Subs + Video)
+            if(p.mainImage) currentMedia.push({type: 'img', url: p.mainImage});
+            if(p.subImages) p.subImages.forEach(url => currentMedia.push({type: 'img', url: url}));
+            if(p.video) currentMedia.push({type: 'vid', url: p.video});
+
+            currentIndex = 0;
+            document.getElementById('lb-title').innerText = p.title;
+            document.getElementById('lb-desc').innerText = p.description || "No description available.";
+            
+            updateLightbox();
+            document.getElementById('lightbox').style.display = 'flex';
         }
 
-        // 4. HANDLE BOOKING FORM SUBMIT
-        document.getElementById('bookingForm').addEventListener('submit', (e) => {
+        window.updateLightbox = function() {
+            const container = document.getElementById('lb-media-container');
+            const item = currentMedia[currentIndex];
+            
+            if(item.type === 'img') {
+                container.innerHTML = `<img src="${item.url}" class="lb-media">`;
+            } else {
+                container.innerHTML = `<video src="${item.url}" class="lb-media" controls autoplay></video>`;
+            }
+        }
+
+        window.changeSlide = function(dir) {
+            currentIndex += dir;
+            if(currentIndex < 0) currentIndex = currentMedia.length - 1;
+            if(currentIndex >= currentMedia.length) currentIndex = 0;
+            updateLightbox();
+        }
+
+        window.closeLightbox = () => document.getElementById('lightbox').style.display = 'none';
+
+        // 3. BOOKING LOGIC
+        window.openBooking = function(id, price) {
+            const p = window.projectsData[id];
+            selectedPrice = price;
+            
+            document.getElementById('bk-title-display').innerText = p.title;
+            document.getElementById('bk-price-display').innerText = "₹" + price;
+
+            // STATE LOGIC
+            const stateSelect = document.getElementById('b-state');
+            stateSelect.innerHTML = ""; // Clear existing
+
+            if(price > 34999) {
+                // Add All States Option
+                const states = ["Maharashtra", "Goa", "Gujarat", "Karnataka", "Delhi", "Punjab", "Rajasthan", "Other"];
+                states.forEach(s => {
+                    stateSelect.innerHTML += `<option value="${s}">${s}</option>`;
+                });
+            } else {
+                // Restrict
+                stateSelect.innerHTML = `<option value="Maharashtra">Maharashtra (Only)</option>`;
+            }
+
+            document.getElementById('booking-modal').style.display = 'flex';
+        }
+
+        window.closeBooking = () => document.getElementById('booking-modal').style.display = 'none';
+
+        // 4. WHATSAPP SEND LOGIC
+        document.getElementById('finalBookingForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const bookingsRef = ref(db, 'bookings');
-            const newBooking = push(bookingsRef);
-            set(newBooking, {
-                name: document.getElementById('c-name').value,
-                phone: document.getElementById('c-phone').value,
-                type: document.getElementById('c-type').value,
-                date: document.getElementById('c-date').value,
-                status: "Pending"
-            }).then(() => {
-                alert("Booking Request Sent! We will contact you soon.");
-                e.target.reset();
-            });
+
+            // Collect Data
+            const name = document.getElementById('b-name').value;
+            const phone = document.getElementById('b-phone').value;
+            const date = document.getElementById('b-date').value;
+            const time = document.getElementById('b-time').value;
+            const spot = document.getElementById('b-spot').value;
+            const address = document.getElementById('b-address').value;
+            const pin = document.getElementById('b-pin').value;
+            const state = document.getElementById('b-state').value;
+            const packageTitle = document.getElementById('bk-title-display').innerText;
+            const packagePrice = document.getElementById('bk-price-display').innerText;
+
+            // Create Message
+            const message = `*NEW BOOKING REQUEST*%0A%0A` +
+                            `*Package:* ${packageTitle}%0A` +
+                            `*Price:* ${packagePrice}%0A%0A` +
+                            `*Client Details:*%0A` +
+                            `Name: ${name}%0A` +
+                            `Phone: ${phone}%0A` +
+                            `Date: ${date}%0A` +
+                            `Time: ${time}%0A` +
+                            `Spot: ${spot}%0A` +
+                            `Address: ${address}%0A` +
+                            `Pincode: ${pin}%0A` +
+                            `State: ${state}`;
+
+            // REPLACE WITH YOUR PHONE NUMBER (Keep 91, remove +)
+            // Example: 919876543210
+            const myPhoneNumber = "919322525389"; 
+
+            const url = `https://wa.me/${myPhoneNumber}?text=${message}`;
+            window.open(url, '_blank');
+            closeBooking();
         });
+
     </script>
 </body>
 </html>
