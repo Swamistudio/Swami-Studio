@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swami Studio | Pro Admin</title>
+    <title>Swami Studio | Admin Panel</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f4f6f9; padding: 20px; color: #333; }
         .container { max-width: 950px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
@@ -14,8 +14,9 @@
         label { font-weight: 600; display: block; margin-top: 15px; margin-bottom: 5px; color: #444; }
         input, button, select, textarea { width: 100%; padding: 12px; margin-top: 5px; box-sizing: border-box; border-radius: 6px; border: 1px solid #ccc; }
         
-        /* URL Input Styling */
+        /* Jija Studio Style Inputs */
         .url-input { border: 1px dashed #D4AF37; background: #fffdf5; }
+        .price-input { border: 2px solid #2ecc71; font-weight: bold; font-size: 1.1em; }
 
         /* Buttons */
         button { background: #D4AF37; color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 20px; transition: 0.2s; font-size: 15px; }
@@ -29,7 +30,6 @@
         .inv-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         .inv-table th { text-align: left; background: #eee; padding: 10px; font-size: 14px; }
         .inv-table td { padding: 12px 10px; border-bottom: 1px solid #eee; font-size: 14px; }
-        .inv-table tr:hover { background: #f9f9f9; }
 
         .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
         .st-avail { background: #d4edda; color: #155724; } 
@@ -58,7 +58,6 @@
         <div class="section-box" id="inventory-section" style="border-left: 5px solid #2ecc71;">
             <h2>📦 Inventory Manager</h2>
             <input type="hidden" id="inv-edit-id">
-
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
                 <div style="flex:2; min-width: 200px;">
                     <label style="margin-top:0;">Item Name</label>
@@ -87,16 +86,12 @@
                     </select>
                 </div>
             </div>
-
             <div style="margin-top:15px;">
                 <button onclick="saveInventory()" id="btn-save-inv" style="background:#2ecc71; color:white; width:auto; padding:10px 30px;">➕ Add Item</button>
                 <button onclick="cancelInvEdit()" id="btn-cancel-inv" class="btn-cancel">Cancel Edit</button>
             </div>
-
             <table class="inv-table">
-                <thead>
-                    <tr><th>Item Name</th><th>Type</th><th>Qty</th><th>Status</th><th style="text-align:right;">Actions</th></tr>
-                </thead>
+                <thead><tr><th>Item Name</th><th>Type</th><th>Qty</th><th>Status</th><th style="text-align:right;">Actions</th></tr></thead>
                 <tbody id="inventory-list"></tbody>
             </table>
         </div>
@@ -112,18 +107,26 @@
         </div>
 
         <div class="section-box">
-            <h2>📸 Upload New Project / Album</h2>
+            <h2>📸 Upload Project & Set Price</h2>
             
             <label>1. Client Name / Title:</label>
             <input type="text" id="pf-title" placeholder="e.g. Rahul & Priya Wedding">
 
-            <label>2. Select Category:</label>
-            <select id="pf-cat-select"><option value="">Loading categories...</option></select>
+            <div style="display:flex; gap:20px;">
+                <div style="flex:1;">
+                    <label>2. Category:</label>
+                    <select id="pf-cat-select"><option value="">Loading categories...</option></select>
+                </div>
+                <div style="flex:1;">
+                    <label>3. Price / Budget (₹):</label>
+                    <input type="number" id="pf-price" class="price-input" placeholder="e.g. 50000">
+                </div>
+            </div>
 
-            <label>3. Description:</label>
+            <label>4. Description:</label>
             <textarea id="pf-desc" placeholder="Project details..." style="height:60px;"></textarea>
 
-            <label>4. Main Cover Image:</label>
+            <label>5. Main Cover Image:</label>
             <div style="background:#f9f9f9; padding:15px; border-radius:6px;">
                 <p style="margin:0 0 5px 0; font-size:0.9em;">Option A: Upload File</p>
                 <input type="file" id="pf-main-img" style="margin-top:0;">
@@ -132,7 +135,7 @@
                 <input type="text" id="pf-main-url" class="url-input" placeholder="https://example.com/image.jpg" style="margin-top:0;">
             </div>
 
-            <label>5. Extra Gallery Images:</label>
+            <label>6. Extra Gallery Images:</label>
             <div style="background:#f9f9f9; padding:15px; border-radius:6px;">
                 <p style="margin:0 0 5px 0; font-size:0.9em;">Option A: Upload Files (Max 5)</p>
                 <input type="file" id="pf-sub-imgs" multiple style="margin-top:0;">
@@ -141,12 +144,12 @@
                 <textarea id="pf-sub-urls" class="url-input" placeholder="https://site.com/photo1.jpg&#10;https://site.com/photo2.jpg" style="height:80px; margin-top:0;"></textarea>
             </div>
 
-            <label>6. Video:</label>
+            <label>7. Video:</label>
             <div style="background:#f9f9f9; padding:15px; border-radius:6px;">
                 <p style="margin:0 0 5px 0; font-size:0.9em;">Option A: Upload Video File</p>
                 <input type="file" id="pf-video" accept="video/*" style="margin-top:0;">
                 <p style="margin:10px 0 5px 0; font-size:0.9em; font-weight:bold;">OR</p>
-                <p style="margin:0 0 5px 0; font-size:0.9em;">Option B: Paste Video URL (YouTube/Link)</p>
+                <p style="margin:0 0 5px 0; font-size:0.9em;">Option B: Paste Video URL</p>
                 <input type="text" id="pf-video-url" class="url-input" placeholder="https://youtube.com/..." style="margin-top:0;">
             </div>
 
@@ -154,13 +157,6 @@
             <p id="upload-status" style="color:blue; margin-top:10px; font-weight:bold;"></p>
         </div>
 
-        <div class="section-box">
-            <h2>📝 Services</h2>
-            <input type="text" id="serv-name" placeholder="Name"><input type="number" id="serv-price" placeholder="Price">
-            <button onclick="addService()">Add Service</button>
-            <div id="services-list" style="margin-top:10px;"></div>
-        </div>
-        
         <div class="section-box">
             <h2>📅 Bookings</h2>
             <div id="bookings-list"></div>
@@ -195,26 +191,24 @@
             } else { alert("Wrong Password"); }
         }
 
-        // --- 1. UPLOAD PROJECT LOGIC (UPDATED) ---
+        // --- 1. UPLOAD PROJECT LOGIC (NOW WITH PRICE) ---
         window.uploadFullProject = async function() {
             const status = document.getElementById('upload-status');
             const title = document.getElementById('pf-title').value;
             const category = document.getElementById('pf-cat-select').value;
+            const price = document.getElementById('pf-price').value; // NEW PRICE FIELD
             const desc = document.getElementById('pf-desc').value;
 
-            // Get Files
+            // Files & URLs
             const mainFile = document.getElementById('pf-main-img').files[0];
             const subFiles = document.getElementById('pf-sub-imgs').files;
             const videoFile = document.getElementById('pf-video').files[0];
-
-            // Get URLs
             let mainUrl = document.getElementById('pf-main-url').value;
             const subUrlsText = document.getElementById('pf-sub-urls').value;
             let videoUrl = document.getElementById('pf-video-url').value;
 
-            // Validation: Must have Title, Category, and (MainFile OR MainURL)
             if(!title || !category) return alert("Title and Category are required!");
-            if(!mainFile && !mainUrl) return alert("Please provide a Main Image (Upload or URL)");
+            if(!mainFile && !mainUrl) return alert("Main Image is required");
 
             status.innerText = "⏳ Processing...";
 
@@ -228,11 +222,7 @@
 
                 // 2. Process Extra Images
                 let subUrls = [];
-                // Add URLs from text box first
-                if(subUrlsText.trim()) {
-                    subUrls = subUrlsText.split('\n').filter(u => u.trim() !== '');
-                }
-                // Upload files if any
+                if(subUrlsText.trim()) subUrls = subUrlsText.split('\n').filter(u => u.trim() !== '');
                 if(subFiles.length > 0) {
                     status.innerText = "Uploading Extra Images...";
                     for(let i=0; i<subFiles.length && i<5; i++) {
@@ -248,14 +238,21 @@
                     videoUrl = await getDownloadURL(snap.ref);
                 }
 
-                // 4. Save Data
-                status.innerText = "Saving to Database...";
+                // 4. Save Data (INCLUDING PRICE)
+                status.innerText = "Saving...";
                 await push(ref(db, 'gallery'), {
-                    title, category, description: desc, mainImage: mainUrl, subImages: subUrls, video: videoUrl, timestamp: Date.now()
+                    title, 
+                    category, 
+                    price: price, // SAVING PRICE HERE
+                    description: desc, 
+                    mainImage: mainUrl, 
+                    subImages: subUrls, 
+                    video: videoUrl, 
+                    timestamp: Date.now()
                 });
 
                 status.innerText = "✅ Success!";
-                alert("Project Uploaded Successfully!");
+                alert("Project Added Successfully!");
                 window.location.reload(); 
 
             } catch(err) { status.innerText = "Error: " + err.message; console.error(err); }
@@ -268,14 +265,11 @@
             const type = document.getElementById('inv-type').value;
             const qty = document.getElementById('inv-qty').value;
             const status = document.getElementById('inv-status').value;
-
             if(!name || !qty) return alert("Name & Qty required");
             const data = { name, type, qty, status };
-
             if(id) update(ref(db, 'inventory/'+id), data).then(() => { alert("Updated"); cancelInvEdit(); });
             else push(ref(db, 'inventory'), data).then(() => { document.getElementById('inv-name').value = ""; document.getElementById('inv-qty').value = ""; });
         }
-
         window.editInventory = function(id, name, type, qty, status) {
             document.getElementById('inv-edit-id').value = id;
             document.getElementById('inv-name').value = name;
@@ -286,7 +280,6 @@
             document.getElementById('btn-cancel-inv').style.display = "inline-block";
             document.getElementById('inventory-section').scrollIntoView({ behavior: 'smooth' });
         }
-
         window.cancelInvEdit = function() {
             document.getElementById('inv-edit-id').value = "";
             document.getElementById('inv-name').value = "";
@@ -294,7 +287,6 @@
             document.getElementById('btn-save-inv').innerText = "➕ Add Item";
             document.getElementById('btn-cancel-inv').style.display = "none";
         }
-
         onValue(ref(db, 'inventory'), (snap) => {
             const list = document.getElementById('inventory-list');
             list.innerHTML = "";
@@ -315,7 +307,6 @@
             if(id) update(ref(db, 'categories/'+id), { name, description: desc }).then(()=>cancelCatEdit());
             else push(ref(db, 'categories'), { name, description: desc }).then(()=>cancelCatEdit());
         }
-
         window.editCategory = function(id, name, desc) {
             document.getElementById('edit-cat-id').value = id;
             document.getElementById('cat-name').value = name;
@@ -323,7 +314,6 @@
             document.getElementById('btn-save-cat').innerText = "Update";
             document.getElementById('btn-cancel-cat').style.display = "inline-block";
         }
-
         window.cancelCatEdit = function() {
             document.getElementById('edit-cat-id').value = "";
             document.getElementById('cat-name').value = "";
@@ -331,7 +321,6 @@
             document.getElementById('btn-save-cat').innerText = "➕ Add Category";
             document.getElementById('btn-cancel-cat').style.display = "none";
         }
-
         onValue(ref(db, 'categories'), (snap) => {
             const div = document.getElementById('category-list-display');
             const sel = document.getElementById('pf-cat-select');
@@ -343,14 +332,8 @@
             });
         });
 
-        // --- 4. SERVICES & BOOKINGS ---
-        window.addService = function() { const name = document.getElementById('serv-name').value; const price = document.getElementById('serv-price').value; if(name) push(ref(db, 'services'), { name, price }); }
+        // --- 4. BOOKINGS ---
         window.remove = remove; window.ref = ref; window.db = db; update = update;
-
-        onValue(ref(db, 'services'), snap => {
-            document.getElementById('services-list').innerHTML = "";
-            if(snap.exists()) snap.forEach(c => document.getElementById('services-list').innerHTML += `<div style="margin-bottom:5px;">${c.val().name} ₹${c.val().price} <button class="btn-delete" onclick="remove(ref(db,'services/${c.key}'))">X</button></div>`);
-        });
         onValue(ref(db, 'bookings'), snap => {
             document.getElementById('bookings-list').innerHTML = "";
             if(snap.exists()) snap.forEach(c => document.getElementById('bookings-list').innerHTML += `<div style="background:#eee; padding:5px; margin-bottom:5px;">${c.val().name} | ${c.val().date} <button class="btn-delete" onclick="remove(ref(db,'bookings/${c.key}'))">X</button></div>`);
