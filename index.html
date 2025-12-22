@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Swami Studio | Professional Photography</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         /* --- THEME --- */
@@ -23,76 +23,65 @@
 
         /* --- NAVBAR --- */
         nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: var(--dark); border-bottom: 1px solid var(--gold); position: sticky; top: 0; z-index: 100; }
+        
         .brand { display: flex; align-items: center; gap: 15px; }
-        .logo-img { height: 50px; border-radius: 50%; border: 2px solid var(--gold); display: none; }
-        .nav-links a { color: var(--white); margin-left: 20px; font-weight: bold; transition: 0.3s; }
+        .logo-img { height: 50px; width: 50px; object-fit: contain; border-radius: 50%; border: 2px solid var(--gold); display: none; }
+        
+        .nav-links { display: flex; align-items: center; gap: 20px; }
+        .nav-links a { color: var(--white); font-weight: bold; transition: 0.3s; font-size: 0.9rem; }
+        .nav-links a:hover { color: var(--gold); }
+        
+        .insta-btn { font-size: 1.5rem; color: #E1306C; transition: 0.3s; }
+        .insta-btn:hover { transform: scale(1.2); color: #fff; }
 
-        /* --- PRODUCT GRID (UNIFORM SIZE) --- */
-        .section { padding: 40px 5%; }
-        .grid-container { 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-            gap: 30px; margin-top: 30px; 
+        /* --- HERO --- */
+        .hero { 
+            height: 70vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; 
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'); 
+            background-size: cover; background-position: center; 
         }
+        .btn-gold { padding: 12px 30px; border: 2px solid var(--gold); color: var(--gold); background: transparent; cursor: pointer; text-transform: uppercase; font-weight: bold; margin-top: 20px; transition: 0.3s; }
+        .btn-gold:hover { background: var(--gold); color: var(--black); }
+
+        /* --- SECTIONS --- */
+        .section { padding: 50px 5%; }
         
-        .product-card {
-            background: #222; border: 1px solid #333; border-radius: 8px; overflow: hidden;
-            display: flex; flex-direction: column; height: 100%; /* Force equal height */
-            transition: transform 0.3s;
-        }
+        /* About Section */
+        .about-box { text-align: center; max-width: 800px; margin: 0 auto; line-height: 1.6; }
+        .contact-number { font-size: 1.2rem; color: var(--gold); margin-top: 10px; font-weight: bold; }
+
+        /* Product Grid */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; margin-top: 30px; }
+        .product-card { background: #222; border: 1px solid #333; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; height: 100%; transition: transform 0.3s; }
         .product-card:hover { transform: translateY(-5px); border-color: var(--gold); }
-        
-        .card-img-container {
-            width: 100%; height: 250px; overflow: hidden; position: relative; cursor: pointer;
-        }
+        .card-img-container { width: 100%; height: 250px; overflow: hidden; position: relative; cursor: pointer; }
         .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
         .product-card:hover .card-img { transform: scale(1.1); }
-        
         .card-info { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
         .card-title { font-size: 1.2rem; margin: 5px 0; color: white; }
         .card-price { color: var(--gold); font-size: 1.3rem; font-weight: bold; margin: 5px 0; }
-        
-        .btn-book { 
-            margin-top: auto; width: 100%; padding: 12px; background: #333; 
-            color: white; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; 
-            border-top: 1px solid var(--gold);
-        }
+        .btn-book { margin-top: auto; width: 100%; padding: 12px; background: #333; color: white; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; border-top: 1px solid var(--gold); }
         .btn-book:hover { background: var(--gold); color: black; }
 
-        /* --- FULL SCREEN LIGHTBOX --- */
-        #lightbox {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 2000; justify-content: center; align-items: center;
-            flex-direction: column; overflow-y: auto; /* Allows scrolling if desc is long */
-        }
-        .lb-content { position: relative; width: 90%; max-width: 800px; text-align: center; margin-top: 50px; }
+        /* --- TERMS & CONDITIONS --- */
+        .terms-box { background: #151515; border: 1px solid #333; padding: 30px; border-radius: 8px; max-width: 900px; margin: 0 auto; }
+        .terms-list { list-style: none; padding: 0; }
+        .terms-list li { padding: 10px 0; border-bottom: 1px solid #333; color: #ccc; }
+        .terms-list li:before { content: "✓"; color: var(--gold); margin-right: 10px; font-weight: bold; }
+        .terms-list li:last-child { border-bottom: none; }
+
+        /* --- LIGHTBOX & MODAL --- */
+        #lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; }
+        .lb-content { position: relative; width: 90%; max-width: 800px; text-align: center; }
         .lb-media { max-width: 100%; max-height: 60vh; border: 2px solid var(--gold); }
-        
-        .lb-desc-box { 
-            background: #222; padding: 20px; margin-top: 20px; text-align: left; border-radius: 8px; 
-            max-height: 200px; overflow-y: auto; /* Scroll description */
-        }
-        
+        .lb-desc-box { background: #222; padding: 20px; margin-top: 20px; text-align: left; border-radius: 8px; max-height: 150px; overflow-y: auto; }
         .lb-nav { position: absolute; top: 40%; transform: translateY(-50%); font-size: 3rem; color: var(--gold); cursor: pointer; user-select: none; }
         .lb-prev { left: -50px; } .lb-next { right: -50px; }
         .lb-close { position: absolute; top: 20px; right: 30px; font-size: 2.5rem; color: white; cursor: pointer; }
 
-        /* --- BOOKING FORM MODAL --- */
-        #booking-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 3000; justify-content: center; align-items: center;
-        }
-        .form-box {
-            background: #1a1a1a; padding: 30px; border-radius: 10px; border: 2px solid var(--gold);
-            width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;
-        }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .full-width { grid-column: span 2; }
-        
-        input, select, textarea { 
-            width: 100%; padding: 10px; background: #333; border: 1px solid #555; 
-            color: white; border-radius: 4px; box-sizing: border-box;
-        }
-        label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: #ccc; }
+        #booking-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 3000; justify-content: center; align-items: center; }
+        .form-box { background: #1a1a1a; padding: 30px; border-radius: 10px; border: 2px solid var(--gold); width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
+        input, select, textarea { width: 100%; padding: 10px; margin-bottom: 10px; background: #333; border: 1px solid #555; color: white; border-radius: 4px; box-sizing: border-box; }
 
     </style>
 </head>
@@ -103,80 +92,91 @@
             <img id="nav-logo" src="" alt="Logo" class="logo-img">
             <h2 id="nav-text" style="margin:0;">SWAMI STUDIO</h2>
         </div>
+        <div class="nav-links">
+            <a href="#about">About</a>
+            <a href="#gallery">Portfolio</a>
+            <a href="#terms">Terms</a>
+            <a href="https://www.instagram.com/_swami_studio_?igsh=cDg4bHViZWFrcTI5" target="_blank" class="insta-btn">
+                <i class="fab fa-instagram"></i>
+            </a>
+        </div>
     </nav>
 
-    <section class="section">
-        <h2 style="text-align: center;">Our Packages</h2>
-        <div id="gallery-grid" class="grid-container">
-            <p style="text-align:center;">Loading projects...</p>
+    <header class="hero">
+        <h1 id="hero-title">Welcome to Swami Studio</h1>
+        <p id="hero-tagline" style="font-size: 1.2rem; margin-top: 10px; color:#ddd;">Loading...</p>
+        <a href="#gallery" class="btn-gold">View Packages</a>
+    </header>
+
+    <section id="about" class="section" style="background: #111;">
+        <h2 style="text-align: center;">About Us</h2>
+        <div class="about-box">
+            <p id="about-text">
+                Welcome to Swami Studio. We specialize in capturing life's most beautiful moments with creativity and precision. 
+                Whether it's a wedding, pre-wedding shoot, or a cinematic film, we turn your memories into timeless art.
+            </p>
+            <p>Contact Us:</p>
+            <div class="contact-number"><i class="fas fa-phone-alt"></i> +91 836 991 0171</div>
         </div>
     </section>
+
+    <section id="gallery" class="section">
+        <h2 style="text-align: center;">Our Packages</h2>
+        <div id="gallery-grid" class="grid-container">
+            <p style="text-align:center;">Loading packages...</p>
+        </div>
+    </section>
+
+    <section id="terms" class="section">
+        <h2 style="text-align: center;">Terms & Conditions</h2>
+        <div class="terms-box">
+            <ul class="terms-list">
+                <li>Will be Covering both side events at Common Venue For Wedding (Only at Wedding Venue).</li>
+                <li>GrahPravesh is <strong>not</strong> included in standard packages.</li>
+                <li>Will be covering Pre-Wedding, Wedding, Engagement, and Haldi.</li>
+                <li>Timings and Location to be shared in WhatsApp group prior to the event.</li>
+                <li><strong>Payment:</strong> Client needs to pay <strong>₹10,000/-</strong> to secure booking.</li>
+                <li>Balance Payment needs to be paid <strong>before</strong> the Wedding day.</li>
+                <li>Song for wedding cinematic video to be provided by client before proceeding with editing.</li>
+            </ul>
+        </div>
+    </section>
+
+    <footer style="text-align: center; padding: 20px; border-top: 1px solid #333; margin-top: 50px;">
+        <p>&copy; 2025 Swami Studio. All rights reserved.</p>
+    </footer>
 
     <div id="lightbox">
         <span class="lb-close" onclick="closeLightbox()">&times;</span>
         <div class="lb-content">
             <span class="lb-nav lb-prev" onclick="changeSlide(-1)">&#10094;</span>
-            <div id="lb-media-container">
-                </div>
+            <div id="lb-media-container"></div>
             <span class="lb-nav lb-next" onclick="changeSlide(1)">&#10095;</span>
-            
             <div class="lb-desc-box">
-                <h3 id="lb-title">Project Title</h3>
-                <p id="lb-desc">Description goes here...</p>
+                <h3 id="lb-title"></h3>
+                <p id="lb-desc"></p>
             </div>
         </div>
     </div>
 
     <div id="booking-modal">
         <div class="form-box">
-            <h2 style="text-align: center; margin-top: 0;">Book <span id="bk-title-display"></span></h2>
-            <p style="text-align:center; color:var(--gold); margin-bottom: 20px;">Price: <span id="bk-price-display"></span></p>
-            
+            <h2 style="text-align: center;">Book <span id="bk-title-display"></span></h2>
+            <p style="text-align:center; color:var(--gold);">Price: <span id="bk-price-display"></span></p>
             <form id="finalBookingForm">
-                <div class="form-grid">
-                    <div class="full-width">
-                        <label>Full Name</label>
-                        <input type="text" id="b-name" required>
-                    </div>
-                    
-                    <div>
-                        <label>Phone</label>
-                        <input type="tel" id="b-phone" required>
-                    </div>
-                    <div>
-                        <label>Date</label>
-                        <input type="date" id="b-date" required>
-                    </div>
-
-                    <div>
-                        <label>Time</label>
-                        <input type="time" id="b-time" required>
-                    </div>
-                    <div>
-                        <label>Spot/Venue</label>
-                        <input type="text" id="b-spot" placeholder="e.g. Hotel Taj">
-                    </div>
-
-                    <div class="full-width">
-                        <label>Address</label>
-                        <textarea id="b-address" rows="2" required></textarea>
-                    </div>
-
-                    <div>
-                        <label>Pincode</label>
-                        <input type="number" id="b-pin" required>
-                    </div>
-                    
-                    <div>
-                        <label>State</label>
-                        <select id="b-state">
-                            <option value="Maharashtra">Maharashtra</option>
-                            </select>
-                    </div>
+                <input type="text" id="b-name" placeholder="Full Name" required>
+                <input type="tel" id="b-phone" placeholder="Phone Number" required>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <input type="date" id="b-date" required>
+                    <input type="time" id="b-time" required>
                 </div>
-
-                <button type="submit" class="btn-book" style="margin-top: 20px; background: #25D366; color: white;">
-                    <i class="fab fa-whatsapp"></i> Place Booking on WhatsApp
+                <input type="text" id="b-spot" placeholder="Event Spot/Venue Name" required>
+                <textarea id="b-address" rows="2" placeholder="Full Address" required></textarea>
+                <input type="number" id="b-pin" placeholder="Pincode" required>
+                <select id="b-state"><option value="Maharashtra">Maharashtra</option></select>
+                
+                <button type="submit" class="btn-book" style="background:#25D366; color:white;">
+                    <i class="fab fa-whatsapp"></i> Place Booking
                 </button>
                 <button type="button" onclick="closeBooking()" style="width:100%; background:transparent; border:none; color:#888; margin-top:10px; cursor:pointer;">Cancel</button>
             </form>
@@ -201,13 +201,25 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Global Variables
-        window.projectsData = {}; // Store all project data here
-        let currentMedia = []; // For lightbox
+        // Global Vars
+        window.projectsData = {};
+        let currentMedia = [];
         let currentIndex = 0;
-        let selectedPrice = 0; // For booking logic
 
-        // 1. LOAD DATA
+        // 1. LOAD SETTINGS (Logo & Tagline)
+        onValue(ref(db, 'settings'), (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                if(data.tagline) document.getElementById('hero-tagline').innerText = data.tagline;
+                if(data.logoUrl) {
+                    const logo = document.getElementById('nav-logo');
+                    logo.src = data.logoUrl;
+                    logo.style.display = 'block';
+                }
+            }
+        });
+
+        // 2. LOAD GALLERY
         onValue(ref(db, 'gallery'), (snapshot) => {
             const grid = document.getElementById('gallery-grid');
             grid.innerHTML = "";
@@ -217,7 +229,7 @@
                 snapshot.forEach((child) => {
                     const id = child.key;
                     const p = child.val();
-                    window.projectsData[id] = p; // Store for lightbox
+                    window.projectsData[id] = p;
 
                     const price = p.price || 0;
                     const displayPrice = price > 0 ? `₹${price}` : "Contact for Price";
@@ -227,7 +239,7 @@
                             <div class="card-img-container" onclick="openLightbox('${id}')">
                                 <img src="${p.mainImage}" class="card-img" alt="${p.title}">
                                 <div style="position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.7); color:white; padding:5px; font-size:12px; border-radius:4px;">
-                                    <i class="fas fa-images"></i> View Gallery
+                                    <i class="fas fa-images"></i> Gallery
                                 </div>
                             </div>
                             <div class="card-info">
@@ -236,26 +248,22 @@
                                 <div class="card-price">${displayPrice}</div>
                                 <button class="btn-book" onclick="openBooking('${id}', ${price})">Book Now</button>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 });
             } else { grid.innerHTML = "<p>No packages found.</p>"; }
         });
 
-        // 2. LIGHTBOX FUNCTIONS
+        // 3. LIGHTBOX
         window.openLightbox = function(id) {
             const p = window.projectsData[id];
             currentMedia = [];
-            
-            // Collect all media (Main + Subs + Video)
             if(p.mainImage) currentMedia.push({type: 'img', url: p.mainImage});
             if(p.subImages) p.subImages.forEach(url => currentMedia.push({type: 'img', url: url}));
             if(p.video) currentMedia.push({type: 'vid', url: p.video});
 
             currentIndex = 0;
             document.getElementById('lb-title').innerText = p.title;
-            document.getElementById('lb-desc').innerText = p.description || "No description available.";
-            
+            document.getElementById('lb-desc').innerText = p.description || "No description.";
             updateLightbox();
             document.getElementById('lightbox').style.display = 'flex';
         }
@@ -263,12 +271,7 @@
         window.updateLightbox = function() {
             const container = document.getElementById('lb-media-container');
             const item = currentMedia[currentIndex];
-            
-            if(item.type === 'img') {
-                container.innerHTML = `<img src="${item.url}" class="lb-media">`;
-            } else {
-                container.innerHTML = `<video src="${item.url}" class="lb-media" controls autoplay></video>`;
-            }
+            container.innerHTML = item.type === 'img' ? `<img src="${item.url}" class="lb-media">` : `<video src="${item.url}" class="lb-media" controls autoplay></video>`;
         }
 
         window.changeSlide = function(dir) {
@@ -280,39 +283,27 @@
 
         window.closeLightbox = () => document.getElementById('lightbox').style.display = 'none';
 
-        // 3. BOOKING LOGIC
+        // 4. BOOKING
         window.openBooking = function(id, price) {
             const p = window.projectsData[id];
-            selectedPrice = price;
-            
             document.getElementById('bk-title-display').innerText = p.title;
             document.getElementById('bk-price-display').innerText = "₹" + price;
 
-            // STATE LOGIC
             const stateSelect = document.getElementById('b-state');
-            stateSelect.innerHTML = ""; // Clear existing
-
+            stateSelect.innerHTML = "";
             if(price > 34999) {
-                // Add All States Option
-                const states = ["Maharashtra", "Goa", "Gujarat", "Karnataka", "Delhi", "Punjab", "Rajasthan", "Other"];
-                states.forEach(s => {
-                    stateSelect.innerHTML += `<option value="${s}">${s}</option>`;
-                });
+                ["Maharashtra", "Goa", "Gujarat", "Karnataka", "Other"].forEach(s => stateSelect.innerHTML += `<option value="${s}">${s}</option>`);
             } else {
-                // Restrict
                 stateSelect.innerHTML = `<option value="Maharashtra">Maharashtra (Only)</option>`;
             }
-
             document.getElementById('booking-modal').style.display = 'flex';
         }
 
         window.closeBooking = () => document.getElementById('booking-modal').style.display = 'none';
 
-        // 4. WHATSAPP SEND LOGIC
+        // 5. WHATSAPP
         document.getElementById('finalBookingForm').addEventListener('submit', (e) => {
             e.preventDefault();
-
-            // Collect Data
             const name = document.getElementById('b-name').value;
             const phone = document.getElementById('b-phone').value;
             const date = document.getElementById('b-date').value;
@@ -324,29 +315,12 @@
             const packageTitle = document.getElementById('bk-title-display').innerText;
             const packagePrice = document.getElementById('bk-price-display').innerText;
 
-            // Create Message
-            const message = `*NEW BOOKING REQUEST*%0A%0A` +
-                            `*Package:* ${packageTitle}%0A` +
-                            `*Price:* ${packagePrice}%0A%0A` +
-                            `*Client Details:*%0A` +
-                            `Name: ${name}%0A` +
-                            `Phone: ${phone}%0A` +
-                            `Date: ${date}%0A` +
-                            `Time: ${time}%0A` +
-                            `Spot: ${spot}%0A` +
-                            `Address: ${address}%0A` +
-                            `Pincode: ${pin}%0A` +
-                            `State: ${state}`;
+            const message = `*NEW BOOKING REQUEST*%0A%0A*Package:* ${packageTitle}%0A*Price:* ${packagePrice}%0A%0A*Details:*%0AName: ${name}%0AContact: ${phone}%0ADate: ${date} at ${time}%0AVenue: ${spot}%0AAddress: ${address}, ${state} - ${pin}`;
 
-            // REPLACE WITH YOUR PHONE NUMBER (Keep 91, remove +)
-            // Example: 919876543210
-            const myPhoneNumber = "919322525389"; 
-
-            const url = `https://wa.me/${myPhoneNumber}?text=${message}`;
-            window.open(url, '_blank');
+            const myPhoneNumber = "918369910171"; 
+            window.open(`https://wa.me/${myPhoneNumber}?text=${message}`, '_blank');
             closeBooking();
         });
-
     </script>
 </body>
 </html>
