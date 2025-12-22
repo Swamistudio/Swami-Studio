@@ -16,7 +16,7 @@
         
         /* Jija Studio Style Inputs */
         .url-input { border: 1px dashed #D4AF37; background: #fffdf5; }
-        .price-input { border: 2px solid #2ecc71; font-weight: bold; font-size: 1.1em; }
+        .price-input { border: 2px solid #2ecc71; font-weight: bold; font-size: 1.1em; color: #2ecc71; }
 
         /* Buttons */
         button { background: #D4AF37; color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 20px; transition: 0.2s; font-size: 15px; }
@@ -26,11 +26,17 @@
         .btn-delete { background: #e74c3c; width: auto; padding: 6px 15px; font-size: 13px; margin-top: 0; }
         .btn-cancel { background: #95a5a6; color: white; display: none; margin-left: 10px; }
 
+        /* Project List Style (The "Down" List) */
+        .project-item { display: flex; align-items: center; background: #f9f9f9; padding: 10px; border: 1px solid #eee; margin-bottom: 10px; border-radius: 6px; }
+        .project-img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; margin-right: 15px; border: 1px solid #ddd; }
+        .project-info { flex: 1; }
+        .project-price { color: #2ecc71; font-weight: bold; }
+
         /* Inventory Table */
         .inv-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         .inv-table th { text-align: left; background: #eee; padding: 10px; font-size: 14px; }
         .inv-table td { padding: 12px 10px; border-bottom: 1px solid #eee; font-size: 14px; }
-
+        
         .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
         .st-avail { background: #d4edda; color: #155724; } 
         .st-use { background: #fff3cd; color: #856404; } 
@@ -107,54 +113,60 @@
         </div>
 
         <div class="section-box">
-            <h2>📸 Upload Project & Set Price</h2>
+            <h2>📸 Upload Project / Product</h2>
             
-            <label>1. Client Name / Title:</label>
-            <input type="text" id="pf-title" placeholder="e.g. Rahul & Priya Wedding">
+            <label>1. Title / Client Name:</label>
+            <input type="text" id="pf-title" placeholder="e.g. Wedding Package A">
 
             <div style="display:flex; gap:20px;">
                 <div style="flex:1;">
                     <label>2. Category:</label>
-                    <select id="pf-cat-select"><option value="">Loading categories...</option></select>
+                    <select id="pf-cat-select"><option value="">Loading...</option></select>
                 </div>
                 <div style="flex:1;">
-                    <label>3. Price / Budget (₹):</label>
+                    <label>3. Price (₹):</label>
                     <input type="number" id="pf-price" class="price-input" placeholder="e.g. 50000">
                 </div>
             </div>
 
             <label>4. Description:</label>
-            <textarea id="pf-desc" placeholder="Project details..." style="height:60px;"></textarea>
+            <textarea id="pf-desc" placeholder="Details about this package..." style="height:60px;"></textarea>
 
-            <label>5. Main Cover Image:</label>
+            <label>5. Main Image (Cover):</label>
             <div style="background:#f9f9f9; padding:15px; border-radius:6px;">
                 <p style="margin:0 0 5px 0; font-size:0.9em;">Option A: Upload File</p>
                 <input type="file" id="pf-main-img" style="margin-top:0;">
                 <p style="margin:10px 0 5px 0; font-size:0.9em; font-weight:bold;">OR</p>
-                <p style="margin:0 0 5px 0; font-size:0.9em;">Option B: Paste Image URL</p>
-                <input type="text" id="pf-main-url" class="url-input" placeholder="https://example.com/image.jpg" style="margin-top:0;">
+                <p style="margin:0 0 5px 0; font-size:0.9em;">Option B: Paste URL</p>
+                <input type="text" id="pf-main-url" class="url-input" placeholder="https://..." style="margin-top:0;">
             </div>
 
-            <label>6. Extra Gallery Images:</label>
+            <label>6. Extra Images:</label>
             <div style="background:#f9f9f9; padding:15px; border-radius:6px;">
-                <p style="margin:0 0 5px 0; font-size:0.9em;">Option A: Upload Files (Max 5)</p>
+                <p style="margin:0 0 5px 0; font-size:0.9em;">Option A: Upload Files</p>
                 <input type="file" id="pf-sub-imgs" multiple style="margin-top:0;">
                 <p style="margin:10px 0 5px 0; font-size:0.9em; font-weight:bold;">OR</p>
-                <p style="margin:0 0 5px 0; font-size:0.9em;">Option B: Paste URLs (One per line)</p>
-                <textarea id="pf-sub-urls" class="url-input" placeholder="https://site.com/photo1.jpg&#10;https://site.com/photo2.jpg" style="height:80px; margin-top:0;"></textarea>
+                <p style="margin:0 0 5px 0; font-size:0.9em;">Option B: Paste URLs</p>
+                <textarea id="pf-sub-urls" class="url-input" placeholder="https://..." style="height:50px; margin-top:0;"></textarea>
             </div>
 
             <label>7. Video:</label>
             <div style="background:#f9f9f9; padding:15px; border-radius:6px;">
-                <p style="margin:0 0 5px 0; font-size:0.9em;">Option A: Upload Video File</p>
+                <p style="margin:0 0 5px 0; font-size:0.9em;">Option A: Upload File</p>
                 <input type="file" id="pf-video" accept="video/*" style="margin-top:0;">
                 <p style="margin:10px 0 5px 0; font-size:0.9em; font-weight:bold;">OR</p>
-                <p style="margin:0 0 5px 0; font-size:0.9em;">Option B: Paste Video URL</p>
+                <p style="margin:0 0 5px 0; font-size:0.9em;">Option B: Paste URL</p>
                 <input type="text" id="pf-video-url" class="url-input" placeholder="https://youtube.com/..." style="margin-top:0;">
             </div>
 
             <button onclick="uploadFullProject()">🚀 Upload Project</button>
             <p id="upload-status" style="color:blue; margin-top:10px; font-weight:bold;"></p>
+
+            <hr style="margin-top:30px; border:0; border-top:1px solid #eee;">
+            <h3>Manage Existing Projects:</h3>
+            <div id="gallery-list-display">
+                <p>Loading projects...</p>
+            </div>
         </div>
 
         <div class="section-box">
@@ -191,12 +203,12 @@
             } else { alert("Wrong Password"); }
         }
 
-        // --- 1. UPLOAD PROJECT LOGIC (NOW WITH PRICE) ---
+        // --- 1. UPLOAD PROJECT LOGIC ---
         window.uploadFullProject = async function() {
             const status = document.getElementById('upload-status');
             const title = document.getElementById('pf-title').value;
             const category = document.getElementById('pf-cat-select').value;
-            const price = document.getElementById('pf-price').value; // NEW PRICE FIELD
+            const price = document.getElementById('pf-price').value; 
             const desc = document.getElementById('pf-desc').value;
 
             // Files & URLs
@@ -208,19 +220,19 @@
             let videoUrl = document.getElementById('pf-video-url').value;
 
             if(!title || !category) return alert("Title and Category are required!");
-            if(!mainFile && !mainUrl) return alert("Main Image is required");
+            if(!mainFile && !mainUrl) return alert("Main Image is required (Upload or URL)");
 
             status.innerText = "⏳ Processing...";
 
             try {
-                // 1. Process Main Image
+                // 1. Main Image
                 if(mainFile) {
                     status.innerText = "Uploading Main Image...";
                     const snap = await uploadBytes(sRef(storage, 'projects/'+mainFile.name), mainFile);
                     mainUrl = await getDownloadURL(snap.ref);
                 }
 
-                // 2. Process Extra Images
+                // 2. Sub Images
                 let subUrls = [];
                 if(subUrlsText.trim()) subUrls = subUrlsText.split('\n').filter(u => u.trim() !== '');
                 if(subFiles.length > 0) {
@@ -231,34 +243,64 @@
                     }
                 }
 
-                // 3. Process Video
+                // 3. Video
                 if(videoFile) {
                     status.innerText = "Uploading Video...";
                     const snap = await uploadBytes(sRef(storage, 'projects/'+videoFile.name), videoFile);
                     videoUrl = await getDownloadURL(snap.ref);
                 }
 
-                // 4. Save Data (INCLUDING PRICE)
+                // 4. Save to DB
                 status.innerText = "Saving...";
                 await push(ref(db, 'gallery'), {
-                    title, 
-                    category, 
-                    price: price, // SAVING PRICE HERE
-                    description: desc, 
-                    mainImage: mainUrl, 
-                    subImages: subUrls, 
-                    video: videoUrl, 
-                    timestamp: Date.now()
+                    title, category, price, description: desc, mainImage: mainUrl, subImages: subUrls, video: videoUrl, timestamp: Date.now()
                 });
 
-                status.innerText = "✅ Success!";
-                alert("Project Added Successfully!");
-                window.location.reload(); 
+                status.innerText = "✅ Added Successfully!";
+                
+                // Clear Form (Stay on Page)
+                document.getElementById('pf-title').value = "";
+                document.getElementById('pf-price').value = "";
+                document.getElementById('pf-desc').value = "";
+                document.getElementById('pf-main-img').value = "";
+                document.getElementById('pf-main-url').value = "";
+                document.getElementById('pf-sub-imgs').value = "";
+                document.getElementById('pf-sub-urls').value = "";
+                document.getElementById('pf-video').value = "";
+                document.getElementById('pf-video-url').value = "";
 
             } catch(err) { status.innerText = "Error: " + err.message; console.error(err); }
         }
 
-        // --- 2. INVENTORY LOGIC ---
+        // --- 2. SHOW EXISTING PROJECTS (INSTANT UPDATE) ---
+        onValue(ref(db, 'gallery'), (snap) => {
+            const listDiv = document.getElementById('gallery-list-display');
+            listDiv.innerHTML = "";
+            
+            if(snap.exists()) {
+                snap.forEach(child => {
+                    const p = child.val();
+                    const key = child.key;
+                    // Format price
+                    const priceDisplay = p.price ? `₹${p.price}` : "No Price";
+                    
+                    listDiv.innerHTML += `
+                        <div class="project-item">
+                            <img src="${p.mainImage}" class="project-img">
+                            <div class="project-info">
+                                <strong>${p.title}</strong><br>
+                                <small>${p.category}</small> | <span class="project-price">${priceDisplay}</span>
+                            </div>
+                            <button class="btn-delete" onclick="remove(ref(db, 'gallery/${key}'))">Delete</button>
+                        </div>
+                    `;
+                });
+            } else {
+                listDiv.innerHTML = "<p>No projects uploaded yet.</p>";
+            }
+        });
+
+        // --- 3. INVENTORY LOGIC ---
         window.saveInventory = function() {
             const id = document.getElementById('inv-edit-id').value;
             const name = document.getElementById('inv-name').value;
@@ -298,7 +340,7 @@
             });
         });
 
-        // --- 3. CATEGORIES ---
+        // --- 4. CATEGORIES ---
         window.saveCategory = function() {
             const id = document.getElementById('edit-cat-id').value;
             const name = document.getElementById('cat-name').value;
@@ -332,7 +374,7 @@
             });
         });
 
-        // --- 4. BOOKINGS ---
+        // --- 5. BOOKINGS ---
         window.remove = remove; window.ref = ref; window.db = db; update = update;
         onValue(ref(db, 'bookings'), snap => {
             document.getElementById('bookings-list').innerHTML = "";
