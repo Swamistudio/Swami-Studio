@@ -7,40 +7,22 @@
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f4f6f9; padding: 20px; color: #333; }
         .container { max-width: 950px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        
         h2 { border-bottom: 2px solid #D4AF37; padding-bottom: 10px; color: #333; margin-top: 0; }
         .section-box { background: #fff; padding: 25px; margin-bottom: 30px; border: 1px solid #e1e4e8; border-radius: 8px; position: relative; }
-        
         label { font-weight: 600; display: block; margin-top: 15px; margin-bottom: 5px; color: #444; }
         input, button, select, textarea { width: 100%; padding: 12px; margin-top: 5px; box-sizing: border-box; border-radius: 6px; border: 1px solid #ccc; }
         
-        /* Jija Studio Style Inputs */
         .url-input { border: 1px dashed #D4AF37; background: #fffdf5; }
         .price-input { border: 2px solid #2ecc71; font-weight: bold; font-size: 1.1em; color: #2ecc71; }
-
-        /* Buttons */
         button { background: #D4AF37; color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 20px; transition: 0.2s; font-size: 15px; }
         button:hover { background: #b59228; }
-        
-        .btn-edit { background: #333; width: auto; padding: 6px 15px; font-size: 13px; margin-right: 5px; margin-top: 0; }
         .btn-delete { background: #e74c3c; width: auto; padding: 6px 15px; font-size: 13px; margin-top: 0; }
-        .btn-cancel { background: #95a5a6; color: white; display: none; margin-left: 10px; }
-
-        /* Project List Style (The "Down" List) */
+        
+        /* Lists */
         .project-item { display: flex; align-items: center; background: #f9f9f9; padding: 10px; border: 1px solid #eee; margin-bottom: 10px; border-radius: 6px; }
         .project-img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; margin-right: 15px; border: 1px solid #ddd; }
         .project-info { flex: 1; }
         .project-price { color: #2ecc71; font-weight: bold; }
-
-        /* Inventory Table */
-        .inv-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .inv-table th { text-align: left; background: #eee; padding: 10px; font-size: 14px; }
-        .inv-table td { padding: 12px 10px; border-bottom: 1px solid #eee; font-size: 14px; }
-        
-        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
-        .st-avail { background: #d4edda; color: #155724; } 
-        .st-use { background: #fff3cd; color: #856404; } 
-        .st-repair { background: #f8d7da; color: #721c24; }
 
         /* Login Modal */
         #login-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 999; }
@@ -61,52 +43,29 @@
         <h1 style="text-align:center;">Swami Studio Admin</h1>
         <a href="index.html" target="_blank" style="display:block; text-align:center; margin-bottom:30px; color:#666;">View Live Website ↗</a>
 
-        <div class="section-box" id="inventory-section" style="border-left: 5px solid #2ecc71;">
-            <h2>📦 Inventory Manager</h2>
-            <input type="hidden" id="inv-edit-id">
-            <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                <div style="flex:2; min-width: 200px;">
-                    <label style="margin-top:0;">Item Name</label>
-                    <input type="text" id="inv-name" placeholder="e.g. Sony A7III" style="margin-top:0;">
-                </div>
-                <div style="flex:1; min-width: 120px;">
-                    <label style="margin-top:0;">Type</label>
-                    <select id="inv-type" style="margin-top:0;">
-                        <option value="Camera">Camera</option>
-                        <option value="Lens">Lens</option>
-                        <option value="Light">Light/Flash</option>
-                        <option value="Drone">Drone</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-                <div style="width:100px;">
-                    <label style="margin-top:0;">Qty</label>
-                    <input type="number" id="inv-qty" placeholder="1" style="margin-top:0;">
-                </div>
-                <div style="flex:1; min-width: 120px;">
-                    <label style="margin-top:0;">Status</label>
-                    <select id="inv-status" style="margin-top:0;">
-                        <option value="Available">Available</option>
-                        <option value="In Use">In Use</option>
-                        <option value="Repair">In Repair</option>
-                    </select>
-                </div>
+        <div class="section-box">
+            <h2>⚙️ General Settings</h2>
+            <label>Website Tagline:</label>
+            <input type="text" id="set-tagline" placeholder="e.g. Capturing Moments...">
+
+            <label><strong>Upload Logo (Appears next to Name):</strong></label>
+            <div style="background:#f9f9f9; padding:15px; border-radius:6px;">
+                 <input type="file" id="logo-file">
+                 <button onclick="uploadLogo()" style="background:#333; margin-top:10px;">Upload & Set Logo</button>
             </div>
-            <div style="margin-top:15px;">
-                <button onclick="saveInventory()" id="btn-save-inv" style="background:#2ecc71; color:white; width:auto; padding:10px 30px;">➕ Add Item</button>
-                <button onclick="cancelInvEdit()" id="btn-cancel-inv" class="btn-cancel">Cancel Edit</button>
-            </div>
-            <table class="inv-table">
-                <thead><tr><th>Item Name</th><th>Type</th><th>Qty</th><th>Status</th><th style="text-align:right;">Actions</th></tr></thead>
-                <tbody id="inventory-list"></tbody>
-            </table>
+            
+            <label>Current Logo URL:</label>
+            <input type="text" id="set-logo" readonly>
+            
+            <button onclick="saveSettings()">Save Settings</button>
         </div>
 
-        <div class="section-box" style="border-left: 5px solid #D4AF37;">
-            <h2>📂 Categories</h2>
+        <div class="section-box">
+            <h2>📂 Manage Categories</h2>
+            <p style="color:#666; font-size:0.9em;">Set descriptions here. All products in this category will use this description.</p>
             <input type="hidden" id="edit-cat-id">
-            <input type="text" id="cat-name" placeholder="Category Name">
-            <textarea id="cat-desc" placeholder="Category Description" style="height:50px;"></textarea>
+            <input type="text" id="cat-name" placeholder="Category Name (e.g. Wedding)">
+            <textarea id="cat-desc" placeholder="Category Description (e.g. Cinematic Wedding Coverage...)" style="height:60px;"></textarea>
             <button onclick="saveCategory()" id="btn-save-cat">➕ Add Category</button>
             <button onclick="cancelCatEdit()" id="btn-cancel-cat" style="display:none; background:#999;">Cancel</button>
             <div id="category-list-display" style="margin-top:15px;"></div>
@@ -114,7 +73,6 @@
 
         <div class="section-box">
             <h2>📸 Upload Project / Product</h2>
-            
             <label>1. Title / Client Name:</label>
             <input type="text" id="pf-title" placeholder="e.g. Wedding Package A">
 
@@ -129,10 +87,7 @@
                 </div>
             </div>
 
-            <label>4. Description:</label>
-            <textarea id="pf-desc" placeholder="Details about this package..." style="height:60px;"></textarea>
-
-            <label>5. Main Image (Cover):</label>
+            <label>4. Main Image (Cover):</label>
             <div style="background:#f9f9f9; padding:15px; border-radius:6px;">
                 <p style="margin:0 0 5px 0; font-size:0.9em;">Option A: Upload File</p>
                 <input type="file" id="pf-main-img" style="margin-top:0;">
@@ -141,16 +96,16 @@
                 <input type="text" id="pf-main-url" class="url-input" placeholder="https://..." style="margin-top:0;">
             </div>
 
-            <label>6. Extra Images:</label>
+            <label>5. Extra Images:</label>
             <div style="background:#f9f9f9; padding:15px; border-radius:6px;">
                 <p style="margin:0 0 5px 0; font-size:0.9em;">Option A: Upload Files</p>
                 <input type="file" id="pf-sub-imgs" multiple style="margin-top:0;">
                 <p style="margin:10px 0 5px 0; font-size:0.9em; font-weight:bold;">OR</p>
-                <p style="margin:0 0 5px 0; font-size:0.9em;">Option B: Paste URLs</p>
+                <p style="margin:0 0 5px 0; font-size:0.9em;">Option B: Paste URLs (One per line)</p>
                 <textarea id="pf-sub-urls" class="url-input" placeholder="https://..." style="height:50px; margin-top:0;"></textarea>
             </div>
 
-            <label>7. Video:</label>
+            <label>6. Video:</label>
             <div style="background:#f9f9f9; padding:15px; border-radius:6px;">
                 <p style="margin:0 0 5px 0; font-size:0.9em;">Option A: Upload File</p>
                 <input type="file" id="pf-video" accept="video/*" style="margin-top:0;">
@@ -164,14 +119,7 @@
 
             <hr style="margin-top:30px; border:0; border-top:1px solid #eee;">
             <h3>Manage Existing Projects:</h3>
-            <div id="gallery-list-display">
-                <p>Loading projects...</p>
-            </div>
-        </div>
-
-        <div class="section-box">
-            <h2>📅 Bookings</h2>
-            <div id="bookings-list"></div>
+            <div id="gallery-list-display"><p>Loading projects...</p></div>
         </div>
     </div>
 
@@ -195,7 +143,6 @@
         const db = getDatabase(app);
         const storage = getStorage(app);
 
-        // AUTH
         window.checkLogin = function() {
             if(document.getElementById('admin-pass').value === "admin123") {
                 document.getElementById('login-modal').style.display = 'none';
@@ -203,144 +150,33 @@
             } else { alert("Wrong Password"); }
         }
 
-        // --- 1. UPLOAD PROJECT LOGIC ---
-        window.uploadFullProject = async function() {
-            const status = document.getElementById('upload-status');
-            const title = document.getElementById('pf-title').value;
-            const category = document.getElementById('pf-cat-select').value;
-            const price = document.getElementById('pf-price').value; 
-            const desc = document.getElementById('pf-desc').value;
-
-            // Files & URLs
-            const mainFile = document.getElementById('pf-main-img').files[0];
-            const subFiles = document.getElementById('pf-sub-imgs').files;
-            const videoFile = document.getElementById('pf-video').files[0];
-            let mainUrl = document.getElementById('pf-main-url').value;
-            const subUrlsText = document.getElementById('pf-sub-urls').value;
-            let videoUrl = document.getElementById('pf-video-url').value;
-
-            if(!title || !category) return alert("Title and Category are required!");
-            if(!mainFile && !mainUrl) return alert("Main Image is required (Upload or URL)");
-
-            status.innerText = "⏳ Processing...";
-
-            try {
-                // 1. Main Image
-                if(mainFile) {
-                    status.innerText = "Uploading Main Image...";
-                    const snap = await uploadBytes(sRef(storage, 'projects/'+mainFile.name), mainFile);
-                    mainUrl = await getDownloadURL(snap.ref);
-                }
-
-                // 2. Sub Images
-                let subUrls = [];
-                if(subUrlsText.trim()) subUrls = subUrlsText.split('\n').filter(u => u.trim() !== '');
-                if(subFiles.length > 0) {
-                    status.innerText = "Uploading Extra Images...";
-                    for(let i=0; i<subFiles.length && i<5; i++) {
-                        const snap = await uploadBytes(sRef(storage, 'projects/'+subFiles[i].name), subFiles[i]);
-                        subUrls.push(await getDownloadURL(snap.ref));
-                    }
-                }
-
-                // 3. Video
-                if(videoFile) {
-                    status.innerText = "Uploading Video...";
-                    const snap = await uploadBytes(sRef(storage, 'projects/'+videoFile.name), videoFile);
-                    videoUrl = await getDownloadURL(snap.ref);
-                }
-
-                // 4. Save to DB
-                status.innerText = "Saving...";
-                await push(ref(db, 'gallery'), {
-                    title, category, price, description: desc, mainImage: mainUrl, subImages: subUrls, video: videoUrl, timestamp: Date.now()
+        // --- 1. SETTINGS & LOGO ---
+        window.uploadLogo = function() {
+            const file = document.getElementById('logo-file').files[0];
+            if(!file) return alert("Select logo file");
+            const storageRef = sRef(storage, 'logos/' + file.name);
+            uploadBytes(storageRef, file).then(snap => {
+                getDownloadURL(snap.ref).then(url => {
+                    document.getElementById('set-logo').value = url;
+                    alert("Logo Uploaded. Click 'Save Settings' to apply.");
                 });
-
-                status.innerText = "✅ Added Successfully!";
-                
-                // Clear Form (Stay on Page)
-                document.getElementById('pf-title').value = "";
-                document.getElementById('pf-price').value = "";
-                document.getElementById('pf-desc').value = "";
-                document.getElementById('pf-main-img').value = "";
-                document.getElementById('pf-main-url').value = "";
-                document.getElementById('pf-sub-imgs').value = "";
-                document.getElementById('pf-sub-urls').value = "";
-                document.getElementById('pf-video').value = "";
-                document.getElementById('pf-video-url').value = "";
-
-            } catch(err) { status.innerText = "Error: " + err.message; console.error(err); }
+            });
         }
-
-        // --- 2. SHOW EXISTING PROJECTS (INSTANT UPDATE) ---
-        onValue(ref(db, 'gallery'), (snap) => {
-            const listDiv = document.getElementById('gallery-list-display');
-            listDiv.innerHTML = "";
-            
-            if(snap.exists()) {
-                snap.forEach(child => {
-                    const p = child.val();
-                    const key = child.key;
-                    // Format price
-                    const priceDisplay = p.price ? `₹${p.price}` : "No Price";
-                    
-                    listDiv.innerHTML += `
-                        <div class="project-item">
-                            <img src="${p.mainImage}" class="project-img">
-                            <div class="project-info">
-                                <strong>${p.title}</strong><br>
-                                <small>${p.category}</small> | <span class="project-price">${priceDisplay}</span>
-                            </div>
-                            <button class="btn-delete" onclick="remove(ref(db, 'gallery/${key}'))">Delete</button>
-                        </div>
-                    `;
-                });
-            } else {
-                listDiv.innerHTML = "<p>No projects uploaded yet.</p>";
+        window.saveSettings = function() {
+            set(ref(db, 'settings'), {
+                tagline: document.getElementById('set-tagline').value,
+                logoUrl: document.getElementById('set-logo').value
+            }).then(() => alert("Settings Saved!"));
+        }
+        onValue(ref(db, 'settings'), (snap) => {
+            const d = snap.val();
+            if(d) {
+                document.getElementById('set-tagline').value = d.tagline || "";
+                document.getElementById('set-logo').value = d.logoUrl || "";
             }
         });
 
-        // --- 3. INVENTORY LOGIC ---
-        window.saveInventory = function() {
-            const id = document.getElementById('inv-edit-id').value;
-            const name = document.getElementById('inv-name').value;
-            const type = document.getElementById('inv-type').value;
-            const qty = document.getElementById('inv-qty').value;
-            const status = document.getElementById('inv-status').value;
-            if(!name || !qty) return alert("Name & Qty required");
-            const data = { name, type, qty, status };
-            if(id) update(ref(db, 'inventory/'+id), data).then(() => { alert("Updated"); cancelInvEdit(); });
-            else push(ref(db, 'inventory'), data).then(() => { document.getElementById('inv-name').value = ""; document.getElementById('inv-qty').value = ""; });
-        }
-        window.editInventory = function(id, name, type, qty, status) {
-            document.getElementById('inv-edit-id').value = id;
-            document.getElementById('inv-name').value = name;
-            document.getElementById('inv-type').value = type;
-            document.getElementById('inv-qty').value = qty;
-            document.getElementById('inv-status').value = status;
-            document.getElementById('btn-save-inv').innerText = "💾 Update";
-            document.getElementById('btn-cancel-inv').style.display = "inline-block";
-            document.getElementById('inventory-section').scrollIntoView({ behavior: 'smooth' });
-        }
-        window.cancelInvEdit = function() {
-            document.getElementById('inv-edit-id').value = "";
-            document.getElementById('inv-name').value = "";
-            document.getElementById('inv-qty').value = "";
-            document.getElementById('btn-save-inv').innerText = "➕ Add Item";
-            document.getElementById('btn-cancel-inv').style.display = "none";
-        }
-        onValue(ref(db, 'inventory'), (snap) => {
-            const list = document.getElementById('inventory-list');
-            list.innerHTML = "";
-            if(snap.exists()) snap.forEach(c => {
-                const b = c.val();
-                let badge = "st-avail";
-                if(b.status==="In Use") badge="st-use"; if(b.status==="Repair") badge="st-repair";
-                list.innerHTML += `<tr><td><strong>${b.name}</strong></td><td>${b.type}</td><td>${b.qty}</td><td><span class="status-badge ${badge}">${b.status}</span></td><td style="text-align:right;"><button class="btn-edit" onclick="editInventory('${c.key}', '${b.name.replace(/'/g, "\\'")}', '${b.type}', '${b.qty}', '${b.status}')">Edit</button><button class="btn-delete" onclick="remove(ref(db, 'inventory/${c.key}'))">Del</button></td></tr>`;
-            });
-        });
-
-        // --- 4. CATEGORIES ---
+        // --- 2. CATEGORY MANAGER ---
         window.saveCategory = function() {
             const id = document.getElementById('edit-cat-id').value;
             const name = document.getElementById('cat-name').value;
@@ -369,17 +205,99 @@
             div.innerHTML = ""; sel.innerHTML = "<option value=''>Select Category...</option>";
             if(snap.exists()) snap.forEach(c => {
                 const sDesc = c.val().description ? c.val().description.replace(/"/g, '&quot;') : "";
-                div.innerHTML += `<div style="background:#eee; padding:8px; margin-bottom:5px; display:flex; justify-content:space-between;"><span><strong>${c.val().name}</strong> - ${c.val().description||""}</span><span><button class="btn-edit" onclick='editCategory("${c.key}", "${c.val().name}", "${sDesc}")'>Edit</button><button class="btn-delete" onclick="remove(ref(db,'categories/${c.key}'))">X</button></span></div>`;
+                div.innerHTML += `<div style="background:#eee; padding:8px; margin-bottom:5px; display:flex; justify-content:space-between;"><span><strong>${c.val().name}</strong><br><small>${c.val().description||""}</small></span><span><button class="btn-edit" onclick='editCategory("${c.key}", "${c.val().name}", "${sDesc}")'>Edit</button><button class="btn-delete" onclick="remove(ref(db,'categories/${c.key}'))">X</button></span></div>`;
                 sel.innerHTML += `<option value="${c.val().name}">${c.val().name}</option>`;
             });
         });
 
-        // --- 5. BOOKINGS ---
-        window.remove = remove; window.ref = ref; window.db = db; update = update;
-        onValue(ref(db, 'bookings'), snap => {
-            document.getElementById('bookings-list').innerHTML = "";
-            if(snap.exists()) snap.forEach(c => document.getElementById('bookings-list').innerHTML += `<div style="background:#eee; padding:5px; margin-bottom:5px;">${c.val().name} | ${c.val().date} <button class="btn-delete" onclick="remove(ref(db,'bookings/${c.key}'))">X</button></div>`);
+        // --- 3. UPLOAD PROJECT (Description Removed) ---
+        window.uploadFullProject = async function() {
+            const status = document.getElementById('upload-status');
+            const title = document.getElementById('pf-title').value;
+            const category = document.getElementById('pf-cat-select').value;
+            const price = document.getElementById('pf-price').value; 
+            
+            // Files & URLs
+            const mainFile = document.getElementById('pf-main-img').files[0];
+            const subFiles = document.getElementById('pf-sub-imgs').files;
+            const videoFile = document.getElementById('pf-video').files[0];
+            let mainUrl = document.getElementById('pf-main-url').value;
+            const subUrlsText = document.getElementById('pf-sub-urls').value;
+            let videoUrl = document.getElementById('pf-video-url').value;
+
+            if(!title || !price) return alert("Title and Price are required!");
+            if(!category) return alert("Category is required!");
+            if(!mainFile && !mainUrl) return alert("Main Image is required");
+
+            status.innerText = "⏳ Processing...";
+
+            try {
+                if(mainFile) {
+                    status.innerText = "Uploading Main Image...";
+                    const snap = await uploadBytes(sRef(storage, 'projects/'+mainFile.name), mainFile);
+                    mainUrl = await getDownloadURL(snap.ref);
+                }
+
+                let subUrls = [];
+                if(subUrlsText.trim()) subUrls = subUrlsText.split('\n').filter(u => u.trim() !== '');
+                if(subFiles.length > 0) {
+                    status.innerText = "Uploading Extra Images...";
+                    for(let i=0; i<subFiles.length && i<5; i++) {
+                        const snap = await uploadBytes(sRef(storage, 'projects/'+subFiles[i].name), subFiles[i]);
+                        subUrls.push(await getDownloadURL(snap.ref));
+                    }
+                }
+
+                if(videoFile) {
+                    status.innerText = "Uploading Video...";
+                    const snap = await uploadBytes(sRef(storage, 'projects/'+videoFile.name), videoFile);
+                    videoUrl = await getDownloadURL(snap.ref);
+                }
+
+                status.innerText = "Saving...";
+                // Note: We are NOT saving 'description' here anymore.
+                // The frontend will use the Category Description.
+                await push(ref(db, 'gallery'), {
+                    title, category, price, mainImage: mainUrl, subImages: subUrls, video: videoUrl, timestamp: Date.now()
+                });
+
+                status.innerText = "✅ Added Successfully!";
+                // Clear Form
+                document.getElementById('pf-title').value = "";
+                document.getElementById('pf-price').value = "";
+                document.getElementById('pf-main-img').value = "";
+                document.getElementById('pf-main-url').value = "";
+                document.getElementById('pf-sub-imgs').value = "";
+                document.getElementById('pf-sub-urls').value = "";
+                document.getElementById('pf-video').value = "";
+                document.getElementById('pf-video-url').value = "";
+
+            } catch(err) { status.innerText = "Error: " + err.message; }
+        }
+
+        // --- 4. SHOW EXISTING PROJECTS ---
+        onValue(ref(db, 'gallery'), (snap) => {
+            const listDiv = document.getElementById('gallery-list-display');
+            listDiv.innerHTML = "";
+            if(snap.exists()) {
+                snap.forEach(child => {
+                    const p = child.val();
+                    const key = child.key;
+                    listDiv.innerHTML += `
+                        <div class="project-item">
+                            <img src="${p.mainImage}" class="project-img">
+                            <div class="project-info">
+                                <strong>${p.title}</strong><br>
+                                <span class="project-price">₹${p.price}</span>
+                            </div>
+                            <button class="btn-delete" onclick="remove(ref(db, 'gallery/${key}'))">Delete</button>
+                        </div>
+                    `;
+                });
+            } else { listDiv.innerHTML = "<p>No projects uploaded.</p>"; }
         });
+        
+        window.remove = remove; window.ref = ref; window.db = db;
     </script>
 </body>
 </html>
