@@ -22,13 +22,10 @@
         /* Action Buttons */
         .btn-edit { background: #333; width: auto; padding: 6px 15px; font-size: 13px; margin-right: 5px; margin-top: 0; }
         .btn-edit:hover { background: #555; }
-        
         .btn-delete { background: #e74c3c; width: auto; padding: 6px 15px; font-size: 13px; margin-top: 0; }
-        .btn-delete:hover { background: #c0392b; }
-        
         .btn-cancel { background: #95a5a6; display: none; margin-left: 10px; width: auto; }
 
-        /* Project List */
+        /* Lists */
         .project-item { display: flex; align-items: center; background: #f9f9f9; padding: 10px; border: 1px solid #eee; margin-bottom: 10px; border-radius: 6px; }
         .project-img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; margin-right: 15px; border: 1px solid #ddd; }
         .project-info { flex: 1; }
@@ -56,7 +53,7 @@
         <div class="section-box">
             <h2>⚙️ General Settings</h2>
             <label>Website Tagline:</label>
-            <input type="text" id="set-tagline" placeholder="Tagline...">
+            <input type="text" id="set-tagline" placeholder="e.g. Capturing Moments...">
             <label>Upload Logo:</label>
             <div style="background:#f9f9f9; padding:15px; border-radius:6px;">
                  <input type="file" id="logo-file">
@@ -68,6 +65,7 @@
 
         <div class="section-box">
             <h2>📂 Manage Categories</h2>
+            <p style="color:#666; font-size:0.9em;">Set descriptions here. All products in this category will use this description.</p>
             <input type="hidden" id="edit-cat-id">
             <input type="text" id="cat-name" placeholder="Category Name">
             <textarea id="cat-desc" placeholder="Category Description" style="height:60px;"></textarea>
@@ -78,7 +76,6 @@
 
         <div class="section-box" id="project-section">
             <h2>📸 Project Manager</h2>
-            
             <input type="hidden" id="pf-edit-id">
 
             <label>1. Title / Client Name:</label>
@@ -100,17 +97,17 @@
                 <p style="margin:0 0 5px 0; font-size:0.9em;">Option A: Upload New File</p>
                 <input type="file" id="pf-main-img" style="margin-top:0;">
                 <p style="margin:10px 0 5px 0; font-size:0.9em; font-weight:bold;">OR</p>
-                <p style="margin:0 0 5px 0; font-size:0.9em;">Option B: Image URL (Current)</p>
+                <p style="margin:0 0 5px 0; font-size:0.9em;">Option B: Image URL</p>
                 <input type="text" id="pf-main-url" class="url-input" placeholder="https://..." style="margin-top:0;">
             </div>
 
-            <label>5. Extra Images:</label>
+            <label>5. Extra Images (Max 10):</label>
             <div style="background:#f9f9f9; padding:15px; border-radius:6px;">
-                <p style="margin:0 0 5px 0; font-size:0.9em;">Option A: Upload New Files</p>
+                <p style="margin:0 0 5px 0; font-size:0.9em;">Option A: Upload New Files (Select up to 10)</p>
                 <input type="file" id="pf-sub-imgs" multiple style="margin-top:0;">
                 <p style="margin:10px 0 5px 0; font-size:0.9em; font-weight:bold;">OR</p>
                 <p style="margin:0 0 5px 0; font-size:0.9em;">Option B: Image URLs (One per line)</p>
-                <textarea id="pf-sub-urls" class="url-input" placeholder="https://..." style="height:50px; margin-top:0;"></textarea>
+                <textarea id="pf-sub-urls" class="url-input" placeholder="https://..." style="height:80px; margin-top:0;"></textarea>
             </div>
 
             <label>6. Video:</label>
@@ -225,7 +222,7 @@
         // --- 3. PROJECT MANAGER (ADD & EDIT) ---
         window.uploadFullProject = async function() {
             const status = document.getElementById('upload-status');
-            const editId = document.getElementById('pf-edit-id').value; // CHECK IF EDITING
+            const editId = document.getElementById('pf-edit-id').value; 
             
             const title = document.getElementById('pf-title').value;
             const category = document.getElementById('pf-cat-select').value;
@@ -245,71 +242,62 @@
             status.innerText = "⏳ Processing...";
 
             try {
-                // 1. Process Main Image (Upload if new file, else keep existing URL)
                 if(mainFile) {
                     status.innerText = "Uploading Main Image...";
                     const snap = await uploadBytes(sRef(storage, 'projects/'+mainFile.name), mainFile);
                     mainUrl = await getDownloadURL(snap.ref);
                 }
 
-                // 2. Process Sub Images
                 let subUrls = [];
                 if(subUrlsText.trim()) subUrls = subUrlsText.split('\n').filter(u => u.trim() !== '');
+                
+                // UPDATED: LOOP UP TO 10
                 if(subFiles.length > 0) {
                     status.innerText = "Uploading Extra Images...";
-                    for(let i=0; i<subFiles.length && i<5; i++) {
+                    for(let i=0; i<subFiles.length && i<10; i++) {
                         const snap = await uploadBytes(sRef(storage, 'projects/'+subFiles[i].name), subFiles[i]);
                         subUrls.push(await getDownloadURL(snap.ref));
                     }
                 }
 
-                // 3. Process Video
                 if(videoFile) {
                     status.innerText = "Uploading Video...";
                     const snap = await uploadBytes(sRef(storage, 'projects/'+videoFile.name), videoFile);
                     videoUrl = await getDownloadURL(snap.ref);
                 }
 
-                // 4. SAVE TO DB (UPDATE vs PUSH)
                 status.innerText = "Saving...";
                 const projectData = { title, category, price, mainImage: mainUrl, subImages: subUrls, video: videoUrl, timestamp: Date.now() };
 
                 if(editId) {
-                    // UPDATE Existing
                     await update(ref(db, 'gallery/' + editId), projectData);
-                    alert("Project Updated Successfully!");
-                    cancelProjectEdit(); // Reset form
+                    alert("Project Updated!");
+                    cancelProjectEdit();
                 } else {
-                    // CREATE New
                     await push(ref(db, 'gallery'), projectData);
-                    alert("Project Added Successfully!");
-                    cancelProjectEdit(); // Reset form
+                    alert("Project Added!");
+                    cancelProjectEdit();
                 }
-                
                 status.innerText = "✅ Done!";
 
             } catch(err) { status.innerText = "Error: " + err.message; }
         }
 
-        // --- EDIT PROJECT HELPER ---
         window.editProject = function(id, title, category, price, mainImg, subImgsStr, video) {
-            // Fill Form
             document.getElementById('pf-edit-id').value = id;
             document.getElementById('pf-title').value = title;
             document.getElementById('pf-cat-select').value = category;
             document.getElementById('pf-price').value = price;
             document.getElementById('pf-main-url').value = mainImg;
-            document.getElementById('pf-sub-urls').value = subImgsStr.replace(/,/g, '\n'); // Convert CSV to Newlines
+            document.getElementById('pf-sub-urls').value = subImgsStr.replace(/,/g, '\n');
             document.getElementById('pf-video-url').value = video;
 
-            // Change Buttons
             document.getElementById('btn-save-proj').innerText = "💾 Update Project";
             document.getElementById('btn-cancel-proj').style.display = "inline-block";
             document.getElementById('project-section').scrollIntoView({ behavior: 'smooth' });
         }
 
         window.cancelProjectEdit = function() {
-            // Clear Form
             document.getElementById('pf-edit-id').value = "";
             document.getElementById('pf-title').value = "";
             document.getElementById('pf-price').value = "";
@@ -320,12 +308,10 @@
             document.getElementById('pf-sub-imgs').value = "";
             document.getElementById('pf-video').value = "";
 
-            // Reset Buttons
             document.getElementById('btn-save-proj').innerText = "🚀 Upload Project";
             document.getElementById('btn-cancel-proj').style.display = "none";
         }
 
-        // --- SHOW PROJECTS LIST ---
         onValue(ref(db, 'gallery'), (snap) => {
             const listDiv = document.getElementById('gallery-list-display');
             listDiv.innerHTML = "";
@@ -333,8 +319,6 @@
                 snap.forEach(child => {
                     const p = child.val();
                     const key = child.key;
-                    
-                    // Prepare data for Edit function (safe strings)
                     const sTitle = p.title.replace(/'/g, "\\'");
                     const sSub = p.subImages ? p.subImages.join(',') : "";
                     
