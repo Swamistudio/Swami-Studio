@@ -20,13 +20,34 @@
         a { text-decoration: none; color: inherit; }
 
         /* --- NAVBAR --- */
-        nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: var(--dark); border-bottom: 1px solid var(--gold); position: sticky; top: 0; z-index: 100; }
+        nav { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 10px 5%; /* Adjusted padding */
+            background: var(--dark); border-bottom: 1px solid var(--gold); 
+            position: sticky; top: 0; z-index: 100; 
+        }
+        
         .brand { display: flex; align-items: center; gap: 15px; }
-        .logo-img { height: 50px; width: 50px; object-fit: contain; border-radius: 50%; border: 2px solid var(--gold); display: none; }
-        .nav-links { display: flex; align-items: center; gap: 20px; }
-        .nav-links a { color: var(--white); font-weight: bold; transition: 0.3s; font-size: 0.9rem; }
+        
+        /* LOGO SIZE */
+        .logo-img { 
+            height: 50px; width: 50px; 
+            object-fit: contain; border-radius: 50%; 
+            border: 2px solid var(--gold); display: none; 
+        }
+        
+        .nav-links { display: flex; align-items: center; gap: 25px; }
+        .nav-links a { color: var(--white); font-weight: bold; transition: 0.3s; font-size: 0.95rem; }
         .nav-links a:hover { color: var(--gold); }
-        .insta-btn { font-size: 1.5rem; color: #E1306C; transition: 0.3s; }
+        
+        /* INSTAGRAM ICON SIZE MATCHED TO LOGO */
+        .insta-btn { 
+            font-size: 2.2rem; /* Increased size to match ~40-50px logo */
+            color: #E1306C; 
+            display: flex; align-items: center;
+            transition: 0.3s; 
+        }
+        .insta-btn:hover { transform: scale(1.1); color: #fff; text-shadow: 0 0 10px #E1306C; }
 
         /* --- HERO --- */
         .hero { 
@@ -39,24 +60,37 @@
 
         /* --- SECTIONS --- */
         .section { padding: 50px 5%; }
+        
+        /* About Section */
         .about-box { text-align: center; max-width: 800px; margin: 0 auto; line-height: 1.6; }
-        .contact-number { font-size: 1.2rem; color: var(--gold); margin-top: 10px; font-weight: bold; }
+        
+        /* CLICKABLE PHONE NUMBER STYLE */
+        .contact-number { 
+            font-size: 1.4rem; 
+            color: var(--gold); 
+            margin-top: 15px; 
+            font-weight: bold; 
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            border: 1px solid var(--gold);
+            border-radius: 30px;
+            transition: 0.3s;
+        }
+        .contact-number:hover { background: var(--gold); color: var(--black); }
 
-        /* Product Grid (Uniform Size) */
+        /* Product Grid */
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; margin-top: 30px; }
         .product-card { background: #222; border: 1px solid #333; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; height: 100%; transition: transform 0.3s; }
         .product-card:hover { transform: translateY(-5px); border-color: var(--gold); }
         .card-img-container { width: 100%; height: 250px; overflow: hidden; position: relative; cursor: pointer; }
         .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
         .product-card:hover .card-img { transform: scale(1.1); }
-        
         .card-info { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; }
         .card-title { font-size: 1.2rem; margin: 5px 0; color: white; }
         .card-price { color: var(--gold); font-size: 1.3rem; font-weight: bold; margin: 5px 0; }
-        
-        /* Description from Category */
         .card-desc { font-size: 0.9rem; color: #aaa; margin-bottom: 10px; line-height: 1.4; border-top: 1px solid #444; padding-top: 10px; margin-top: 5px; }
-        
         .btn-book { margin-top: auto; width: 100%; padding: 12px; background: #333; color: white; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; border-top: 1px solid var(--gold); }
         .btn-book:hover { background: var(--gold); color: black; }
 
@@ -92,7 +126,9 @@
             <a href="#about">About</a>
             <a href="#gallery">Portfolio</a>
             <a href="#terms">Terms</a>
-            <a href="https://www.instagram.com/_swami_studio_?igsh=cDg4bHViZWFrcTI5" target="_blank" class="insta-btn"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.instagram.com/_swami_studio_?igsh=cDg4bHViZWFrcTI5" target="_blank" class="insta-btn" title="Follow us on Instagram">
+                <i class="fab fa-instagram"></i>
+            </a>
         </div>
     </nav>
 
@@ -107,7 +143,9 @@
         <div class="about-box">
             <p id="about-text">Welcome to Swami Studio. We specialize in capturing life's most beautiful moments with creativity and precision.</p>
             <p>Contact Us:</p>
-            <div class="contact-number"><i class="fas fa-phone-alt"></i> +91 836 991 0171</div>
+            <a href="tel:+918369910171" class="contact-number">
+                <i class="fas fa-phone"></i> +91 836 991 0171
+            </a>
         </div>
     </section>
 
@@ -193,7 +231,7 @@
 
         // Global Vars
         window.projectsData = {};
-        window.categoryDescriptions = {}; // STORE CATEGORY DESCRIPTIONS
+        window.categoryDescriptions = {}; 
         let currentMedia = [];
         let currentIndex = 0;
 
@@ -214,7 +252,6 @@
         onValue(ref(db, 'categories'), (catSnap) => {
             if(catSnap.exists()) {
                 catSnap.forEach(c => {
-                    // Save Description to global object
                     window.categoryDescriptions[c.val().name] = c.val().description || "";
                 });
             }
@@ -234,7 +271,6 @@
                         const price = p.price || 0;
                         const displayPrice = price > 0 ? `₹${price}` : "Contact for Price";
                         
-                        // GET DESCRIPTION FROM CATEGORY
                         const catDesc = window.categoryDescriptions[p.category] || "Professional Service";
 
                         grid.innerHTML += `
@@ -270,7 +306,6 @@
 
             currentIndex = 0;
             document.getElementById('lb-title').innerText = p.title;
-            // SHOW CATEGORY DESCRIPTION IN LIGHTBOX
             document.getElementById('lb-desc').innerText = window.categoryDescriptions[p.category] || "";
             
             updateLightbox();
