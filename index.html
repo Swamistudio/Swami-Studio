@@ -50,64 +50,24 @@
         .section { padding: 60px 5%; scroll-margin-top: 80px; }
         
         /* --- ABOUT US (UPDATED FOR DYNAMIC BG) --- */
-        #about {
-            position: relative;
-            overflow: hidden;
-            /* Default fallback bg */
-            background: #111; 
-        }
-        #about-bg-container {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0;
-        }
-        #about-bg-media {
-            width: 100%; height: 100%;
-            object-fit: cover;
-        }
-        .about-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); /* Darken bg so text pops */
-            z-index: 1;
-        }
-        .about-box { 
-            position: relative; 
-            z-index: 2; /* Text sits on top */
-            text-align: center; max-width: 800px; margin: 0 auto; line-height: 1.6; 
-        }
-        .contact-number { 
-            font-size: 1.2rem; color: var(--gold); margin-top: 15px; font-weight: bold; 
-            display: inline-flex; align-items: center; gap: 10px; padding: 10px 20px;
-            border: 1px solid var(--gold); border-radius: 30px; transition: 0.3s;
-        }
+        #about { position: relative; overflow: hidden; background: #111; }
+        #about-bg-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+        #about-bg-media { width: 100%; height: 100%; object-fit: cover; }
+        .about-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1; }
+        .about-box { position: relative; z-index: 2; text-align: center; max-width: 800px; margin: 0 auto; line-height: 1.6; }
+        .contact-number { font-size: 1.2rem; color: var(--gold); margin-top: 15px; font-weight: bold; display: inline-flex; align-items: center; gap: 10px; padding: 10px 20px; border: 1px solid var(--gold); border-radius: 30px; transition: 0.3s; }
 
         /* --- PRODUCT GRID --- */
-        .grid-container { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-            gap: 30px; margin-top: 30px; 
-        }
-        .product-card { 
-            background: #222; border: 1px solid #333; border-radius: 8px; overflow: hidden; 
-            display: flex; flex-direction: column; height: 100%; transition: transform 0.3s; 
-        }
-        .card-img-container { 
-            width: 100%; height: 280px; 
-            overflow: hidden; position: relative; cursor: pointer; 
-        }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; margin-top: 30px; }
+        .product-card { background: #222; border: 1px solid #333; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; height: 100%; transition: transform 0.3s; }
+        .card-img-container { width: 100%; height: 280px; overflow: hidden; position: relative; cursor: pointer; }
         .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
         .product-card:hover .card-img { transform: scale(1.05); }
-        .card-overlay {
-            position: absolute; bottom: 0; left: 0; width: 100%;
-            background: linear-gradient(transparent, rgba(0,0,0,0.8));
-            padding: 10px; color: white; display: flex; align-items: center; gap: 5px;
-            font-size: 0.9rem;
-        }
+        .card-overlay { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(transparent, rgba(0,0,0,0.8)); padding: 10px; color: white; display: flex; align-items: center; gap: 5px; font-size: 0.9rem; }
         .card-info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
         .card-cat { color: var(--gold); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
         .card-title { font-size: 1.4rem; margin: 5px 0; color: white; }
-        .card-price { color: #fff; font-size: 1.2rem; font-weight: bold; margin: 10px 0; border-bottom: 1px solid #444; padding-bottom: 10px; }
+        /* Price removed from CSS */
         .card-desc { font-size: 0.9rem; color: #ccc; margin-bottom: 15px; line-height: 1.5; }
         .btn-book { margin-top: auto; width: 100%; padding: 12px; background: var(--gold); color: var(--black); border: none; font-weight: bold; cursor: pointer; font-size: 1rem; border-radius: 4px; }
 
@@ -162,9 +122,9 @@
     </header>
 
     <section id="about" class="section">
-        <div id="about-bg-container">
-            </div>
-        <div class="about-overlay"></div> <div class="about-box">
+        <div id="about-bg-container"></div>
+        <div class="about-overlay"></div>
+        <div class="about-box">
             <h2 style="text-align: center;">About Us</h2>
             <p id="about-text">Welcome to Swami Studio. We specialize in capturing life's most beautiful moments with creativity and precision.</p>
             <p>Contact Us:</p>
@@ -216,7 +176,6 @@
     <div id="booking-modal">
         <div class="form-box">
             <h2 style="text-align: center;">Book <span id="bk-title-display"></span></h2>
-            <p style="text-align:center; color:var(--gold);">Price: <span id="bk-price-display"></span></p>
             <form id="finalBookingForm">
                 <input type="text" id="b-name" placeholder="Full Name" required>
                 <input type="tel" id="b-phone" placeholder="Phone Number" required>
@@ -227,7 +186,13 @@
                 <input type="text" id="b-spot" placeholder="Event Spot/Venue Name" required>
                 <textarea id="b-address" rows="2" placeholder="Full Address" required></textarea>
                 <input type="number" id="b-pin" placeholder="Pincode" required>
-                <select id="b-state"><option value="Maharashtra">Maharashtra</option></select>
+                <select id="b-state">
+                    <option value="Maharashtra">Maharashtra</option>
+                    <option value="Goa">Goa</option>
+                    <option value="Gujarat">Gujarat</option>
+                    <option value="Karnataka">Karnataka</option>
+                    <option value="Other">Other</option>
+                </select>
                 <button type="submit" class="btn-book" style="background:#25D366; color:white;">
                     <i class="fab fa-whatsapp"></i> Place Booking
                 </button>
@@ -272,27 +237,25 @@
             }
         });
 
-        // 2. LOAD ABOUT BACKGROUND (NEW)
+        // 2. LOAD ABOUT BACKGROUND
         onValue(ref(db, 'settings/aboutBg'), (snapshot) => {
             const data = snapshot.val();
             const container = document.getElementById('about-bg-container');
-            container.innerHTML = ""; // Clear existing
+            container.innerHTML = ""; 
 
             if (data && data.url) {
                 if (data.type === 'video') {
-                    // Render Video Background
                     container.innerHTML = `
                         <video id="about-bg-media" autoplay muted loop playsinline>
                             <source src="${data.url}" type="video/mp4">
                         </video>`;
                 } else {
-                    // Render Image Background
                     container.innerHTML = `<img id="about-bg-media" src="${data.url}">`;
                 }
             }
         });
 
-        // 3. LOAD GALLERY
+        // 3. LOAD GALLERY (Price removed)
         onValue(ref(db, 'gallery'), (snapshot) => {
             const grid = document.getElementById('gallery-grid');
             grid.innerHTML = "";
@@ -302,8 +265,7 @@
                     const id = child.key;
                     const p = child.val();
                     window.projectsData[id] = p;
-                    const price = p.price || 0;
-                    const displayPrice = price > 0 ? `₹${price}` : "Contact for Price";
+                    // Description from Project
                     const desc = p.description || "";
 
                     grid.innerHTML += `
@@ -317,9 +279,8 @@
                             <div class="card-info">
                                 <div class="card-cat">${p.category}</div>
                                 <h3 class="card-title">${p.title}</h3>
-                                <div class="card-price">${displayPrice}</div>
                                 <p class="card-desc">${desc}</p>
-                                <button class="btn-book" onclick="openBooking('${id}', ${price})">Book Now</button>
+                                <button class="btn-book" onclick="openBooking('${id}')">Book Now</button>
                             </div>
                         </div>`;
                 });
@@ -354,15 +315,11 @@
 
         window.closeLightbox = () => document.getElementById('lightbox').style.display = 'none';
 
-        window.openBooking = function(id, price) {
+        // 5. BOOKING (No Price arg)
+        window.openBooking = function(id) {
             const p = window.projectsData[id];
             document.getElementById('bk-title-display').innerText = p.title;
-            document.getElementById('bk-price-display').innerText = "₹" + price;
-            const stateSelect = document.getElementById('b-state');
-            stateSelect.innerHTML = "";
-            if(price > 34999) {
-                ["Maharashtra", "Goa", "Gujarat", "Karnataka", "Other"].forEach(s => stateSelect.innerHTML += `<option value="${s}">${s}</option>`);
-            } else { stateSelect.innerHTML = `<option value="Maharashtra">Maharashtra (Only)</option>`; }
+            // No price logic for state anymore
             document.getElementById('booking-modal').style.display = 'flex';
         }
 
@@ -379,9 +336,8 @@
             const pin = document.getElementById('b-pin').value;
             const state = document.getElementById('b-state').value;
             const packageTitle = document.getElementById('bk-title-display').innerText;
-            const packagePrice = document.getElementById('bk-price-display').innerText;
 
-            const message = `*NEW BOOKING REQUEST*%0A%0A*Package:* ${packageTitle}%0A*Price:* ${packagePrice}%0A%0A*Details:*%0AName: ${name}%0AContact: ${phone}%0ADate: ${date} at ${time}%0AVenue: ${spot}%0AAddress: ${address}, ${state} - ${pin}`;
+            const message = `*NEW BOOKING REQUEST*%0A%0A*Package:* ${packageTitle}%0A%0A*Details:*%0AName: ${name}%0AContact: ${phone}%0ADate: ${date} at ${time}%0AVenue: ${spot}%0AAddress: ${address}, ${state} - ${pin}`;
             const myPhoneNumber = "918369910171"; 
             window.open(`https://wa.me/${myPhoneNumber}?text=${message}`, '_blank');
             closeBooking();
