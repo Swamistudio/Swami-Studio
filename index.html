@@ -50,12 +50,23 @@
         .section { padding: 60px 5%; scroll-margin-top: 80px; }
         
         /* --- ABOUT US (PLAYLIST BG) --- */
-        #about { position: relative; overflow: hidden; background: #111; min-height: 400px; display: flex; align-items: center; justify-content: center; }
+        #about { 
+            position: relative; overflow: hidden; background: #111; 
+            min-height: 500px; /* Taller for video visibility */
+            display: flex; align-items: center; justify-content: center; 
+        }
         #about-bg-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
         
-        .bg-media { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; transition: opacity 1s; }
+        /* Ensures video covers the whole area */
+        .bg-media { 
+            width: 100%; height: 100%; object-fit: cover; 
+            position: absolute; top: 0; left: 0; 
+            animation: fadeIn 1s; 
+        }
         
-        .about-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .about-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1; }
         .about-box { position: relative; z-index: 2; text-align: center; max-width: 800px; margin: 0 auto; line-height: 1.6; }
         .contact-number { font-size: 1.2rem; color: var(--gold); margin-top: 15px; font-weight: bold; display: inline-flex; align-items: center; gap: 10px; padding: 10px 20px; border: 1px solid var(--gold); border-radius: 30px; transition: 0.3s; }
 
@@ -125,6 +136,7 @@
 
     <section id="about" class="section">
         <div id="about-bg-container"></div>
+        
         <div class="about-overlay"></div>
         <div class="about-box">
             <h2 style="text-align: center;">About Us</h2>
@@ -178,7 +190,6 @@
     <div id="booking-modal">
         <div class="form-box">
             <h2 style="text-align: center;">Book <span id="bk-title-display"></span></h2>
-            <p style="text-align:center; color:var(--gold);">Price: <span id="bk-price-display"></span></p>
             <form id="finalBookingForm">
                 <input type="text" id="b-name" placeholder="Full Name" required>
                 <input type="tel" id="b-phone" placeholder="Phone Number" required>
@@ -226,7 +237,7 @@
         let currentMedia = [];
         let currentIndex = 0;
 
-        // 1. SETTINGS
+        // 1. SETTINGS (General)
         onValue(ref(db, 'settings/general'), (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -239,7 +250,7 @@
             }
         });
 
-        // 2. BACKGROUND PLAYLIST LOGIC
+        // 2. BACKGROUND PLAYLIST LOGIC (WITH LOOP)
         let bgList = [];
         let bgIndex = 0;
 
@@ -249,7 +260,6 @@
                 // Convert object to array
                 bgList = Object.values(snapshot.val());
             }
-            // Start playing if list is ready
             if(bgList.length > 0) {
                 bgIndex = 0;
                 playBackground();
@@ -262,7 +272,7 @@
             const container = document.getElementById('about-bg-container');
             const item = bgList[bgIndex];
             
-            container.innerHTML = ""; // Clear current
+            container.innerHTML = ""; 
 
             if(item.type === 'video') {
                 const vid = document.createElement('video');
@@ -272,19 +282,18 @@
                 vid.muted = true;
                 vid.playsInline = true;
                 
-                // When video ends, play next
+                // WHEN VIDEO ENDS -> PLAY NEXT
                 vid.onended = function() {
                     nextBg();
                 };
                 container.appendChild(vid);
             } else {
-                // It's an image
                 const img = document.createElement('img');
                 img.src = item.url;
                 img.className = 'bg-media';
                 container.appendChild(img);
                 
-                // Change after 5 seconds
+                // IF IMAGE -> WAIT 5 SECONDS THEN PLAY NEXT
                 setTimeout(() => {
                     nextBg();
                 }, 5000);
@@ -293,7 +302,10 @@
 
         function nextBg() {
             bgIndex++;
-            if(bgIndex >= bgList.length) bgIndex = 0; // Loop
+            // INFINITE LOOP LOGIC
+            if(bgIndex >= bgList.length) {
+                bgIndex = 0; 
+            }
             playBackground();
         }
 
@@ -322,7 +334,6 @@
                             <div class="card-info">
                                 <div class="card-cat">${p.category}</div>
                                 <h3 class="card-title">${p.title}</h3>
-                                <div class="card-price">${displayPrice}</div>
                                 <p class="card-desc">${desc}</p>
                                 <button class="btn-book" onclick="openBooking('${id}', ${price})">Book Now</button>
                             </div>
@@ -362,12 +373,6 @@
         window.openBooking = function(id, price) {
             const p = window.projectsData[id];
             document.getElementById('bk-title-display').innerText = p.title;
-            document.getElementById('bk-price-display').innerText = "₹" + price;
-            const stateSelect = document.getElementById('b-state');
-            stateSelect.innerHTML = "";
-            if(price > 34999) {
-                ["Maharashtra", "Goa", "Gujarat", "Karnataka", "Other"].forEach(s => stateSelect.innerHTML += `<option value="${s}">${s}</option>`);
-            } else { stateSelect.innerHTML = `<option value="Maharashtra">Maharashtra (Only)</option>`; }
             document.getElementById('booking-modal').style.display = 'flex';
         }
 
@@ -384,9 +389,8 @@
             const pin = document.getElementById('b-pin').value;
             const state = document.getElementById('b-state').value;
             const packageTitle = document.getElementById('bk-title-display').innerText;
-            const packagePrice = document.getElementById('bk-price-display').innerText;
 
-            const message = `*NEW BOOKING REQUEST*%0A%0A*Package:* ${packageTitle}%0A*Price:* ${packagePrice}%0A%0A*Details:*%0AName: ${name}%0AContact: ${phone}%0ADate: ${date} at ${time}%0AVenue: ${spot}%0AAddress: ${address}, ${state} - ${pin}`;
+            const message = `*NEW BOOKING REQUEST*%0A%0A*Package:* ${packageTitle}%0A*Details:*%0AName: ${name}%0AContact: ${phone}%0ADate: ${date} at ${time}%0AVenue: ${spot}%0AAddress: ${address}, ${state} - ${pin}`;
             const myPhoneNumber = "918369910171"; 
             window.open(`https://wa.me/${myPhoneNumber}?text=${message}`, '_blank');
             closeBooking();
