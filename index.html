@@ -62,6 +62,7 @@
             position: absolute; top: 0; left: 0; 
             animation: fadeIn 1s; 
         }
+        
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
         .about-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1; }
@@ -133,7 +134,6 @@
 
     <section id="about" class="section">
         <div id="about-bg-container"></div>
-        
         <div class="about-overlay"></div>
         <div class="about-box">
             <h2 style="text-align: center;">About Us</h2>
@@ -247,7 +247,7 @@
             }
         });
 
-        // 2. BACKGROUND PLAYLIST LOGIC (WITH LOOP)
+        // 2. FIXED BACKGROUND PLAYLIST LOGIC
         let bgList = [];
         let bgIndex = 0;
 
@@ -257,8 +257,11 @@
                 bgList = Object.values(snapshot.val());
             }
             if(bgList.length > 0) {
-                bgIndex = 0;
-                playBackground();
+                // Keep playing if already playing, else start
+                if(document.getElementById('about-bg-container').innerHTML === "") {
+                    bgIndex = 0;
+                    playBackground();
+                }
             }
         });
 
@@ -274,13 +277,19 @@
                 const vid = document.createElement('video');
                 vid.src = item.url;
                 vid.className = 'bg-media';
-                vid.autoplay = true;
-                vid.muted = true;
+                vid.muted = true; 
                 vid.playsInline = true;
+                vid.autoplay = true;
                 
                 vid.onended = function() {
                     nextBg();
                 };
+                
+                // FORCE PLAY FOR MOBILE
+                vid.oncanplay = () => {
+                    vid.play().catch(e => console.log("Auto-play prevented", e));
+                };
+
                 container.appendChild(vid);
             } else {
                 const img = document.createElement('img');
@@ -297,7 +306,7 @@
         function nextBg() {
             bgIndex++;
             if(bgIndex >= bgList.length) {
-                bgIndex = 0; // Loop back to start
+                bgIndex = 0; // Loop back to 0
             }
             playBackground();
         }
