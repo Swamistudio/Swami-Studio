@@ -52,18 +52,16 @@
         /* --- ABOUT US (PLAYLIST BG) --- */
         #about { 
             position: relative; overflow: hidden; background: #111; 
-            min-height: 500px; /* Taller for video visibility */
+            min-height: 500px; 
             display: flex; align-items: center; justify-content: center; 
         }
         #about-bg-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
         
-        /* Ensures video covers the whole area */
         .bg-media { 
             width: 100%; height: 100%; object-fit: cover; 
             position: absolute; top: 0; left: 0; 
             animation: fadeIn 1s; 
         }
-        
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
         .about-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1; }
@@ -80,7 +78,6 @@
         .card-info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
         .card-cat { color: var(--gold); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
         .card-title { font-size: 1.4rem; margin: 5px 0; color: white; }
-        .card-price { color: #fff; font-size: 1.2rem; font-weight: bold; margin: 10px 0; border-bottom: 1px solid #444; padding-bottom: 10px; }
         .card-desc { font-size: 0.9rem; color: #ccc; margin-bottom: 15px; line-height: 1.5; }
         .btn-book { margin-top: auto; width: 100%; padding: 12px; background: var(--gold); color: var(--black); border: none; font-weight: bold; cursor: pointer; font-size: 1rem; border-radius: 4px; }
 
@@ -237,7 +234,7 @@
         let currentMedia = [];
         let currentIndex = 0;
 
-        // 1. SETTINGS (General)
+        // 1. SETTINGS
         onValue(ref(db, 'settings/general'), (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -257,7 +254,6 @@
         onValue(ref(db, 'settings/aboutBg'), (snapshot) => {
             bgList = [];
             if(snapshot.exists()) {
-                // Convert object to array
                 bgList = Object.values(snapshot.val());
             }
             if(bgList.length > 0) {
@@ -282,7 +278,6 @@
                 vid.muted = true;
                 vid.playsInline = true;
                 
-                // WHEN VIDEO ENDS -> PLAY NEXT
                 vid.onended = function() {
                     nextBg();
                 };
@@ -293,7 +288,6 @@
                 img.className = 'bg-media';
                 container.appendChild(img);
                 
-                // IF IMAGE -> WAIT 5 SECONDS THEN PLAY NEXT
                 setTimeout(() => {
                     nextBg();
                 }, 5000);
@@ -302,9 +296,8 @@
 
         function nextBg() {
             bgIndex++;
-            // INFINITE LOOP LOGIC
             if(bgIndex >= bgList.length) {
-                bgIndex = 0; 
+                bgIndex = 0; // Loop back to start
             }
             playBackground();
         }
@@ -319,8 +312,6 @@
                     const id = child.key;
                     const p = child.val();
                     window.projectsData[id] = p;
-                    const price = p.price || 0;
-                    const displayPrice = price > 0 ? `₹${price}` : "Contact for Price";
                     const desc = p.description || "";
 
                     grid.innerHTML += `
@@ -335,7 +326,7 @@
                                 <div class="card-cat">${p.category}</div>
                                 <h3 class="card-title">${p.title}</h3>
                                 <p class="card-desc">${desc}</p>
-                                <button class="btn-book" onclick="openBooking('${id}', ${price})">Book Now</button>
+                                <button class="btn-book" onclick="openBooking('${id}')">Book Now</button>
                             </div>
                         </div>`;
                 });
@@ -370,7 +361,7 @@
 
         window.closeLightbox = () => document.getElementById('lightbox').style.display = 'none';
 
-        window.openBooking = function(id, price) {
+        window.openBooking = function(id) {
             const p = window.projectsData[id];
             document.getElementById('bk-title-display').innerText = p.title;
             document.getElementById('booking-modal').style.display = 'flex';
