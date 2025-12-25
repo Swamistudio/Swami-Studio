@@ -3,218 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swami Studio | Professional Photography</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <title>Swami Studio | Admin Panel</title>
     <style>
-        /* --- THEME --- */
-        :root {
-            --gold: #D4AF37;
-            --black: #0f0f0f;
-            --dark: #1a1a1a;
-            --white: #ffffff;
-        }
-        html { scroll-behavior: smooth; }
-        body { margin: 0; font-family: 'Lato', sans-serif; background-color: var(--black); color: var(--white); overflow-x: hidden; }
-        h1, h2, h3 { font-family: 'Playfair Display', serif; color: var(--gold); }
-        a { text-decoration: none; color: inherit; }
-
-        /* --- NAVBAR --- */
-        nav { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 15px 5%; background: var(--dark); border-bottom: 1px solid var(--gold); 
-            position: sticky; top: 0; z-index: 1000; 
-        }
-        .brand { display: flex; align-items: center; gap: 15px; }
-        .logo-img { height: 45px; width: 45px; object-fit: contain; border-radius: 50%; border: 2px solid var(--gold); display: none; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f6f9; padding: 20px; color: #333; }
+        .container { max-width: 950px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h2 { border-bottom: 2px solid #D4AF37; padding-bottom: 10px; color: #333; margin-top: 0; }
+        .section-box { background: #fff; padding: 25px; margin-bottom: 30px; border: 1px solid #e1e4e8; border-radius: 8px; position: relative; }
+        label { font-weight: 600; display: block; margin-top: 15px; margin-bottom: 5px; color: #444; }
+        input, button, select, textarea { width: 100%; padding: 12px; margin-top: 5px; box-sizing: border-box; border-radius: 6px; border: 1px solid #ccc; }
         
-        .nav-links { display: flex; align-items: center; gap: 20px; }
-        .nav-links a { color: var(--white); font-weight: bold; transition: 0.3s; font-size: 0.95rem; }
-        .nav-links a:hover { color: var(--gold); }
-        .insta-btn { font-size: 2rem; color: #E1306C; display: flex; align-items: center; transition: 0.3s; }
-
-        /* --- HERO --- */
-        .hero { 
-            height: 60vh; min-height: 400px;
-            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; 
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'); 
-            background-size: cover; background-position: center; 
-            padding: 0 20px;
-        }
-        .hero h1 { font-size: 2.5rem; margin-bottom: 10px; }
-        .btn-gold { padding: 12px 30px; border: 2px solid var(--gold); color: var(--gold); background: transparent; cursor: pointer; text-transform: uppercase; font-weight: bold; margin-top: 20px; transition: 0.3s; }
-        .btn-gold:hover { background: var(--gold); color: var(--black); }
-
-        /* --- SECTIONS --- */
-        .section { padding: 60px 5%; scroll-margin-top: 80px; }
-        
-        /* --- ABOUT US (PLAYLIST BG) --- */
-        #about { 
-            position: relative; overflow: hidden; background: #111; 
-            min-height: 500px; 
-            display: flex; align-items: center; justify-content: center; 
-        }
-        #about-bg-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
-        
-        .bg-media { 
-            width: 100%; height: 100%; object-fit: cover; 
-            position: absolute; top: 0; left: 0; 
-            animation: fadeIn 1s; 
-        }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        .about-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1; }
-        .about-box { position: relative; z-index: 2; text-align: center; max-width: 800px; margin: 0 auto; line-height: 1.6; }
-        .contact-number { font-size: 1.2rem; color: var(--gold); margin-top: 15px; font-weight: bold; display: inline-flex; align-items: center; gap: 10px; padding: 10px 20px; border: 1px solid var(--gold); border-radius: 30px; transition: 0.3s; }
-
-        /* --- PRODUCT GRID --- */
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; margin-top: 30px; }
-        .product-card { background: #222; border: 1px solid #333; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; height: 100%; transition: transform 0.3s; }
-        .card-img-container { width: 100%; height: 280px; overflow: hidden; position: relative; cursor: pointer; }
-        .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
-        .product-card:hover .card-img { transform: scale(1.05); }
-        .card-overlay { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(transparent, rgba(0,0,0,0.8)); padding: 10px; color: white; display: flex; align-items: center; gap: 5px; font-size: 0.9rem; }
-        .card-info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
-        .card-cat { color: var(--gold); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
-        .card-title { font-size: 1.4rem; margin: 5px 0; color: white; }
-        .card-desc { font-size: 0.9rem; color: #ccc; margin-bottom: 15px; line-height: 1.5; }
-        .btn-book { margin-top: auto; width: 100%; padding: 12px; background: var(--gold); color: var(--black); border: none; font-weight: bold; cursor: pointer; font-size: 1rem; border-radius: 4px; }
-
-        /* --- MOBILE --- */
         @media (max-width: 768px) {
-            nav { flex-direction: column; gap: 15px; padding: 15px 5%; }
-            .nav-links { width: 100%; justify-content: space-between; font-size: 0.85rem; }
-            .hero h1 { font-size: 2rem; }
-            .grid-container { grid-template-columns: 1fr; gap: 40px; }
-            .card-img-container { height: 250px; }
+            body { padding: 10px; }
+            .container { padding: 20px; }
+            .section-box { padding: 15px; }
+            .flex-group { flex-direction: column !important; gap: 0 !important; }
+            .flex-group > div { width: 100%; }
         }
 
-        /* --- TERMS --- */
-        .terms-box { background: #151515; border: 1px solid #333; padding: 20px; border-radius: 8px; max-width: 900px; margin: 0 auto; }
-        .terms-list { list-style: none; padding: 0; }
-        .terms-list li { padding: 12px 0; border-bottom: 1px solid #333; color: #ccc; display: flex; gap: 10px; }
-        .terms-list li:before { content: "✓"; color: var(--gold); font-weight: bold; }
+        .url-input { border: 1px dashed #D4AF37; background: #fffdf5; }
+        button { background: #D4AF37; color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 20px; transition: 0.2s; font-size: 15px; }
+        
+        .btn-edit { background: #333; width: auto; padding: 8px 15px; font-size: 13px; margin-right: 5px; margin-top: 5px; }
+        .btn-delete { background: #e74c3c; width: auto; padding: 8px 15px; font-size: 13px; margin-top: 5px; }
+        .btn-cancel { background: #95a5a6; display: none; margin-left: 10px; width: auto; }
 
-        /* --- LIGHTBOX & MODAL --- */
-        #lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3000; justify-content: center; align-items: center; flex-direction: column; }
-        .lb-content { position: relative; width: 95%; max-width: 800px; text-align: center; }
-        .lb-media { max-width: 100%; max-height: 60vh; border: 2px solid var(--gold); background: black; }
-        .lb-desc-box { background: #222; padding: 15px; margin-top: 15px; text-align: left; border-radius: 8px; max-height: 20vh; overflow-y: auto; color: #fff; }
-        .lb-nav { position: absolute; top: 40%; transform: translateY(-50%); font-size: 3rem; color: var(--gold); cursor: pointer; user-select: none; background: rgba(0,0,0,0.5); padding: 0 10px; }
-        .lb-prev { left: 0; } .lb-next { right: 0; }
-        .lb-close { position: absolute; top: -40px; right: 0; font-size: 2.5rem; color: white; cursor: pointer; padding: 10px; }
+        .project-item { display: flex; align-items: center; background: #f9f9f9; padding: 10px; border: 1px solid #eee; margin-bottom: 10px; border-radius: 6px; flex-wrap: wrap; }
+        .project-img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; margin-right: 15px; }
+        .project-info { flex: 1; min-width: 150px; }
+        .flex-group { display: flex; gap: 20px; }
 
-        #booking-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 4000; justify-content: center; align-items: center; }
-        .form-box { background: #1a1a1a; padding: 25px; border-radius: 10px; border: 2px solid var(--gold); width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
-        input, select, textarea { width: 100%; padding: 12px; margin-bottom: 10px; background: #333; border: 1px solid #555; color: white; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
+        .bg-item { display: flex; justify-content: space-between; align-items: center; background: #eee; padding: 8px; margin-bottom: 5px; border-radius: 4px; }
+        .bg-thumb { height: 40px; width: 40px; object-fit: cover; margin-right: 10px; border-radius: 4px; background: #000; }
+
+        #login-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 999; }
+        #login-box { background: white; padding: 40px; width: 320px; text-align: center; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-    <nav>
-        <div class="brand">
-            <img id="nav-logo" src="" alt="Logo" class="logo-img">
-            <h2 id="nav-text" style="margin:0;">SWAMI STUDIO</h2>
-        </div>
-        <div class="nav-links">
-            <a href="#about">About</a>
-            <a href="#gallery">Portfolio</a>
-            <a href="#terms">Terms</a>
-            <a href="https://www.instagram.com/_swami_studio_?igsh=cDg4bHViZWFrcTI5" target="_blank" class="insta-btn"><i class="fab fa-instagram"></i></a>
-        </div>
-    </nav>
-
-    <header class="hero">
-        <h1 id="hero-title">Welcome to Swami Studio</h1>
-        <p id="hero-tagline" style="font-size: 1.2rem; margin-top: 10px; color:#ddd;">Loading...</p>
-        <a href="#gallery" class="btn-gold">View Packages</a>
-    </header>
-
-    <section id="about" class="section">
-        <div id="about-bg-container"></div>
-        
-        <div class="about-overlay"></div>
-        <div class="about-box">
-            <h2 style="text-align: center;">About Us</h2>
-            <p id="about-text">Welcome to Swami Studio. We specialize in capturing life's most beautiful moments with creativity and precision.</p>
-            <p>Contact Us:</p>
-            <a href="tel:+918369910171" class="contact-number">
-                <i class="fas fa-phone"></i> +91 836 991 0171
-            </a>
-        </div>
-    </section>
-
-    <section id="gallery" class="section">
-        <h2 style="text-align: center;">Our Packages</h2>
-        <div id="gallery-grid" class="grid-container">
-            <p style="text-align:center;">Loading packages...</p>
-        </div>
-    </section>
-
-    <section id="terms" class="section">
-        <h2 style="text-align: center;">Terms & Conditions</h2>
-        <div class="terms-box">
-            <ul class="terms-list">
-                <li>Will be Covering both side events at Common Venue For Wedding (Only at Wedding Venue).</li>
-                <li>GrahPravesh is <strong>not</strong> included in standard packages.</li>
-                <li>Will be covering Pre-Wedding, Wedding, Engagement, and Haldi.</li>
-                <li>Timings and Location to be shared in WhatsApp group prior to the event.</li>
-                <li><strong>Payment:</strong> Client needs to pay <strong>₹10,000/-</strong> to secure booking.</li>
-                <li>Balance Payment needs to be paid <strong>before</strong> the Wedding day.</li>
-                <li>Song for wedding cinematic video to be provided by client before proceeding with editing.</li>
-            </ul>
-        </div>
-    </section>
-
-    <footer style="text-align: center; padding: 20px; border-top: 1px solid #333; margin-top: 50px;">
-        <p>&copy; 2025 Swami Studio. All rights reserved.</p>
-    </footer>
-
-    <div id="lightbox">
-        <span class="lb-close" onclick="closeLightbox()">&times;</span>
-        <div class="lb-content">
-            <span class="lb-nav lb-prev" onclick="changeSlide(-1)">&#10094;</span>
-            <div id="lb-media-container"></div>
-            <span class="lb-nav lb-next" onclick="changeSlide(1)">&#10095;</span>
-            <div class="lb-desc-box">
-                <h3 id="lb-title"></h3>
-                <p id="lb-desc"></p>
-            </div>
+    <div id="login-modal">
+        <div id="login-box">
+            <h2>Admin Login</h2>
+            <input type="password" id="admin-pass" placeholder="Password">
+            <button onclick="checkLogin()">Login</button>
         </div>
     </div>
 
-    <div id="booking-modal">
-        <div class="form-box">
-            <h2 style="text-align: center;">Book <span id="bk-title-display"></span></h2>
-            <form id="finalBookingForm">
-                <input type="text" id="b-name" placeholder="Full Name" required>
-                <input type="tel" id="b-phone" placeholder="Phone Number" required>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                    <input type="date" id="b-date" required>
-                    <input type="time" id="b-time" required>
-                </div>
-                <input type="text" id="b-spot" placeholder="Event Spot/Venue Name" required>
-                <textarea id="b-address" rows="2" placeholder="Full Address" required></textarea>
-                <input type="number" id="b-pin" placeholder="Pincode" required>
-                <select id="b-state">
-                    <option value="Maharashtra">Maharashtra</option>
-                    <option value="Goa">Goa</option>
-                    <option value="Gujarat">Gujarat</option>
-                    <option value="Karnataka">Karnataka</option>
-                    <option value="Other">Other</option>
-                </select>
-                <button type="submit" class="btn-book" style="background:#25D366; color:white;">
-                    <i class="fab fa-whatsapp"></i> Place Booking
-                </button>
-                <button type="button" onclick="closeBooking()" style="width:100%; background:transparent; border:none; color:#888; margin-top:10px; cursor:pointer;">Cancel</button>
-            </form>
+    <div class="container" id="admin-panel" style="display:none;">
+        <h1 style="text-align:center;">Swami Studio Admin</h1>
+        <a href="index.html" target="_blank" style="display:block; text-align:center; margin-bottom:30px; color:#666;">View Live Website ↗</a>
+
+        <div class="section-box">
+            <h2>⚙️ General Settings</h2>
+            <label>Website Tagline:</label>
+            <input type="text" id="set-tagline" placeholder="e.g. Capturing Moments...">
+            <label>Upload Logo:</label>
+            <div style="background:#f9f9f9; padding:15px; border-radius:6px;">
+                 <input type="file" id="logo-file">
+                 <button onclick="uploadLogo()" style="background:#333; margin-top:10px; width:auto;">Upload</button>
+                 <input type="text" id="set-logo" class="url-input" placeholder="Logo URL" style="margin-top:10px;">
+            </div>
+            <button onclick="saveSettings()">Save Settings</button>
+        </div>
+
+        <div class="section-box" style="border-left: 5px solid #2ecc71;">
+            <h2>🎨 About Us Background (Max 10)</h2>
+            <p style="color:#666;">Add images or videos. They will play in a loop.</p>
+            
+            <label>Add New File:</label>
+            <input type="file" id="about-bg-file" accept="image/*,video/*">
+            <p style="margin:5px 0; font-weight:bold; font-size:0.9em;">OR Paste URL:</p>
+            <input type="text" id="about-bg-url" class="url-input" placeholder="https://...">
+            
+            <button onclick="addAboutBg()" style="background:#2ecc71; color:white;">➕ Add to Playlist</button>
+            <p id="about-status" style="color:blue; margin-top:10px;"></p>
+
+            <h4 style="margin-top:20px;">Current Playlist:</h4>
+            <div id="about-bg-list">Loading...</div>
+        </div>
+
+        <div class="section-box">
+            <h2>📂 Manage Categories</h2>
+            <input type="hidden" id="edit-cat-id">
+            <input type="text" id="cat-name" placeholder="Category Name">
+            <button onclick="saveCategory()" id="btn-save-cat">➕ Add Category</button>
+            <button onclick="cancelCatEdit()" id="btn-cancel-cat" class="btn-cancel">Cancel</button>
+            <div id="category-list-display" style="margin-top:15px;"></div>
+        </div>
+
+        <div class="section-box" id="project-section">
+            <h2>📸 Project Manager</h2>
+            <input type="hidden" id="pf-edit-id">
+
+            <label>1. Title / Client Name:</label>
+            <input type="text" id="pf-title" placeholder="e.g. Wedding Package A">
+
+            <label>2. Category:</label>
+            <select id="pf-cat-select"><option value="">Loading...</option></select>
+
+            <label>3. Description:</label>
+            <textarea id="pf-desc" placeholder="Details about this project..." style="height:60px;"></textarea>
+
+            <label>4. Main Image (Cover):</label>
+            <div style="background:#f9f9f9; padding:15px; border-radius:6px;">
+                <p style="margin:0 0 5px 0; font-size:0.9em;">Option A: Upload New File</p>
+                <input type="file" id="pf-main-img" style="margin-top:0;">
+                <p style="margin:10px 0 5px 0; font-size:0.9em; font-weight:bold;">OR</p>
+                <p style="margin:0 0 5px 0; font-size:0.9em;">Option B: Image URL</p>
+                <input type="text" id="pf-main-url" class="url-input" placeholder="https://..." style="margin-top:0;">
+            </div>
+
+            <label>5. Extra Images (Max 10):</label>
+            <div style="background:#f9f9f9; padding:15px; border-radius:6px;">
+                <p style="margin:0 0 5px 0; font-size:0.9em;">Upload New (Select up to 10)</p>
+                <input type="file" id="pf-sub-imgs" multiple style="margin-top:0;">
+                <p style="margin:10px 0 5px 0; font-size:0.9em; font-weight:bold;">OR</p>
+                <p style="margin:0 0 5px 0; font-size:0.9em;">Image URLs (One per line)</p>
+                <textarea id="pf-sub-urls" class="url-input" placeholder="https://..." style="height:80px; margin-top:0;"></textarea>
+            </div>
+
+            <label>6. Video:</label>
+            <div style="background:#f9f9f9; padding:15px; border-radius:6px;">
+                <p style="margin:0 0 5px 0; font-size:0.9em;">Option A: Upload New File</p>
+                <input type="file" id="pf-video" accept="video/*" style="margin-top:0;">
+                <p style="margin:10px 0 5px 0; font-size:0.9em; font-weight:bold;">OR</p>
+                <p style="margin:0 0 5px 0; font-size:0.9em;">Option B: Video URL</p>
+                <input type="text" id="pf-video-url" class="url-input" placeholder="https://..." style="margin-top:0;">
+            </div>
+
+            <div style="display:flex; align-items:center; flex-wrap:wrap;">
+                <button onclick="uploadFullProject()" id="btn-save-proj">🚀 Upload Project</button>
+                <button onclick="cancelProjectEdit()" id="btn-cancel-proj" class="btn-cancel">Cancel Edit</button>
+            </div>
+            
+            <p id="upload-status" style="color:blue; margin-top:10px; font-weight:bold;"></p>
+
+            <hr style="margin-top:30px; border:0; border-top:1px solid #eee;">
+            <h3>Manage Existing Projects:</h3>
+            <div id="gallery-list-display"><p>Loading projects...</p></div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyADXKgZ-y4Oo4BjfGfW7euGLCPp623KE-M",
@@ -229,163 +162,239 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+        const storage = getStorage(app);
 
-        window.projectsData = {};
-        let currentMedia = [];
-        let currentIndex = 0;
-
-        // 1. SETTINGS
-        onValue(ref(db, 'settings/general'), (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                if(data.tagline) document.getElementById('hero-tagline').innerText = data.tagline;
-                if(data.logoUrl) {
-                    const logo = document.getElementById('nav-logo');
-                    logo.src = data.logoUrl;
-                    logo.style.display = 'block';
-                }
-            }
-        });
-
-        // 2. BACKGROUND PLAYLIST LOGIC (WITH LOOP)
-        let bgList = [];
-        let bgIndex = 0;
-
-        onValue(ref(db, 'settings/aboutBg'), (snapshot) => {
-            bgList = [];
-            if(snapshot.exists()) {
-                bgList = Object.values(snapshot.val());
-            }
-            if(bgList.length > 0) {
-                bgIndex = 0;
-                playBackground();
-            }
-        });
-
-        function playBackground() {
-            if(bgList.length === 0) return;
-            
-            const container = document.getElementById('about-bg-container');
-            const item = bgList[bgIndex];
-            
-            container.innerHTML = ""; 
-
-            if(item.type === 'video') {
-                const vid = document.createElement('video');
-                vid.src = item.url;
-                vid.className = 'bg-media';
-                vid.autoplay = true;
-                vid.muted = true;
-                vid.playsInline = true;
-                
-                vid.onended = function() {
-                    nextBg();
-                };
-                container.appendChild(vid);
-            } else {
-                const img = document.createElement('img');
-                img.src = item.url;
-                img.className = 'bg-media';
-                container.appendChild(img);
-                
-                setTimeout(() => {
-                    nextBg();
-                }, 5000);
-            }
+        window.checkLogin = function() {
+            if(document.getElementById('admin-pass').value === "swami1997") {
+                document.getElementById('login-modal').style.display = 'none';
+                document.getElementById('admin-panel').style.display = 'block';
+            } else { alert("Wrong Password"); }
         }
 
-        function nextBg() {
-            bgIndex++;
-            if(bgIndex >= bgList.length) {
-                bgIndex = 0; // Loop back to start
-            }
-            playBackground();
-        }
-
-        // 3. PROJECTS
-        onValue(ref(db, 'gallery'), (snapshot) => {
-            const grid = document.getElementById('gallery-grid');
-            grid.innerHTML = "";
-            window.projectsData = {}; 
-            if(snapshot.exists()){
-                snapshot.forEach((child) => {
-                    const id = child.key;
-                    const p = child.val();
-                    window.projectsData[id] = p;
-                    const desc = p.description || "";
-
-                    grid.innerHTML += `
-                        <div class="product-card">
-                            <div class="card-img-container" onclick="openLightbox('${id}')">
-                                <img src="${p.mainImage}" class="card-img" alt="${p.title}">
-                                <div class="card-overlay">
-                                    <i class="fas fa-images"></i> Tap to View Gallery
-                                </div>
-                            </div>
-                            <div class="card-info">
-                                <div class="card-cat">${p.category}</div>
-                                <h3 class="card-title">${p.title}</h3>
-                                <p class="card-desc">${desc}</p>
-                                <button class="btn-book" onclick="openBooking('${id}')">Book Now</button>
-                            </div>
-                        </div>`;
+        // --- 1. SETTINGS ---
+        window.uploadLogo = function() {
+            const file = document.getElementById('logo-file').files[0];
+            if(!file) return alert("Select logo file");
+            const storageRef = sRef(storage, 'logos/' + Date.now() + '_' + file.name);
+            uploadBytes(storageRef, file).then(snap => {
+                getDownloadURL(snap.ref).then(url => {
+                    document.getElementById('set-logo').value = url;
+                    alert("Logo Uploaded!");
                 });
-            } else { grid.innerHTML = "<p>No packages found.</p>"; }
+            });
+        }
+        window.saveSettings = function() {
+            set(ref(db, 'settings/general'), {
+                tagline: document.getElementById('set-tagline').value,
+                logoUrl: document.getElementById('set-logo').value
+            }).then(() => alert("Settings Saved!"));
+        }
+        onValue(ref(db, 'settings/general'), (snap) => {
+            const d = snap.val();
+            if(d) {
+                document.getElementById('set-tagline').value = d.tagline || "";
+                document.getElementById('set-logo').value = d.logoUrl || "";
+            }
         });
 
-        window.openLightbox = function(id) {
-            const p = window.projectsData[id];
-            currentMedia = [];
-            if(p.mainImage) currentMedia.push({type: 'img', url: p.mainImage});
-            if(p.subImages) p.subImages.forEach(url => currentMedia.push({type: 'img', url: url}));
-            if(p.video) currentMedia.push({type: 'vid', url: p.video});
-            currentIndex = 0;
-            document.getElementById('lb-title').innerText = p.title;
-            document.getElementById('lb-desc').innerText = p.description || "";
-            updateLightbox();
-            document.getElementById('lightbox').style.display = 'flex';
-        }
-
-        window.updateLightbox = function() {
-            const container = document.getElementById('lb-media-container');
-            const item = currentMedia[currentIndex];
-            container.innerHTML = item.type === 'img' ? `<img src="${item.url}" class="lb-media">` : `<video src="${item.url}" class="lb-media" controls autoplay></video>`;
-        }
-
-        window.changeSlide = function(dir) {
-            currentIndex += dir;
-            if(currentIndex < 0) currentIndex = currentMedia.length - 1;
-            if(currentIndex >= currentMedia.length) currentIndex = 0;
-            updateLightbox();
-        }
-
-        window.closeLightbox = () => document.getElementById('lightbox').style.display = 'none';
-
-        window.openBooking = function(id) {
-            const p = window.projectsData[id];
-            document.getElementById('bk-title-display').innerText = p.title;
-            document.getElementById('booking-modal').style.display = 'flex';
-        }
-
-        window.closeBooking = () => document.getElementById('booking-modal').style.display = 'none';
-
-        document.getElementById('finalBookingForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = document.getElementById('b-name').value;
-            const phone = document.getElementById('b-phone').value;
-            const date = document.getElementById('b-date').value;
-            const time = document.getElementById('b-time').value;
-            const spot = document.getElementById('b-spot').value;
-            const address = document.getElementById('b-address').value;
-            const pin = document.getElementById('b-pin').value;
-            const state = document.getElementById('b-state').value;
-            const packageTitle = document.getElementById('bk-title-display').innerText;
-
-            const message = `*NEW BOOKING REQUEST*%0A%0A*Package:* ${packageTitle}%0A*Details:*%0AName: ${name}%0AContact: ${phone}%0ADate: ${date} at ${time}%0AVenue: ${spot}%0AAddress: ${address}, ${state} - ${pin}`;
-            const myPhoneNumber = "918369910171"; 
-            window.open(`https://wa.me/${myPhoneNumber}?text=${message}`, '_blank');
-            closeBooking();
+        // --- 2. ABOUT US BACKGROUND PLAYLIST ---
+        let bgCount = 0;
+        onValue(ref(db, 'settings/aboutBg'), (snap) => {
+            const listDiv = document.getElementById('about-bg-list');
+            listDiv.innerHTML = "";
+            bgCount = 0;
+            if(snap.exists()) {
+                snap.forEach(child => {
+                    bgCount++;
+                    const data = child.val();
+                    const thumb = data.type === 'video' ? 'https://cdn-icons-png.flaticon.com/512/1179/1179069.png' : data.url; 
+                    listDiv.innerHTML += `
+                        <div class="bg-item">
+                            <div style="display:flex; align-items:center;">
+                                <img src="${thumb}" class="bg-thumb">
+                                <span>${data.type.toUpperCase()}</span>
+                            </div>
+                            <button class="btn-delete" style="margin:0;" onclick="remove(ref(db, 'settings/aboutBg/${child.key}'))">Remove</button>
+                        </div>
+                    `;
+                });
+            } else { listDiv.innerHTML = "<p>No backgrounds added yet.</p>"; }
         });
+
+        window.addAboutBg = function() {
+            if(bgCount >= 10) return alert("Max 10 items allowed. Please remove some first.");
+            const file = document.getElementById('about-bg-file').files[0];
+            const urlInput = document.getElementById('about-bg-url').value;
+            const status = document.getElementById('about-status');
+            status.innerText = "Processing...";
+
+            const addToDb = (url, type) => {
+                push(ref(db, 'settings/aboutBg'), { url: url, type: type }).then(() => { 
+                    status.innerText = ""; document.getElementById('about-bg-file').value = ""; document.getElementById('about-bg-url').value = ""; alert("Added to Playlist!"); 
+                });
+            };
+
+            if (file) {
+                const type = file.type.startsWith('video') ? 'video' : 'image';
+                status.innerText = `Uploading ${type}...`;
+                const storageRef = sRef(storage, 'backgrounds/' + Date.now() + '_' + file.name);
+                uploadBytes(storageRef, file).then(snap => {
+                    getDownloadURL(snap.ref).then(url => { addToDb(url, type); });
+                });
+            } else if (urlInput) {
+                const type = (urlInput.match(/\.(mp4|webm|mov)$/i)) ? 'video' : 'image';
+                addToDb(urlInput, type);
+            } else { alert("Select file or paste URL"); }
+        }
+
+        // --- 3. CATEGORIES ---
+        window.saveCategory = function() {
+            const id = document.getElementById('edit-cat-id').value;
+            const name = document.getElementById('cat-name').value;
+            if(!name) return alert("Name required");
+            if(id) update(ref(db, 'categories/'+id), { name }).then(()=>cancelCatEdit());
+            else push(ref(db, 'categories'), { name }).then(()=>cancelCatEdit());
+        }
+        window.editCategory = function(id, name) {
+            document.getElementById('edit-cat-id').value = id;
+            document.getElementById('cat-name').value = name;
+            document.getElementById('btn-save-cat').innerText = "Update";
+            document.getElementById('btn-cancel-cat').style.display = "inline-block";
+        }
+        window.cancelCatEdit = function() {
+            document.getElementById('edit-cat-id').value = "";
+            document.getElementById('cat-name').value = "";
+            document.getElementById('btn-save-cat').innerText = "➕ Add Category";
+            document.getElementById('btn-cancel-cat').style.display = "none";
+        }
+        onValue(ref(db, 'categories'), (snap) => {
+            const div = document.getElementById('category-list-display');
+            const sel = document.getElementById('pf-cat-select');
+            div.innerHTML = ""; sel.innerHTML = "<option value=''>Select Category...</option>";
+            if(snap.exists()) snap.forEach(c => {
+                div.innerHTML += `<div style="background:#eee; padding:8px; margin-bottom:5px; display:flex; justify-content:space-between;"><span><strong>${c.val().name}</strong></span><span><button class="btn-edit" onclick='editCategory("${c.key}", "${c.val().name}")'>Edit</button><button class="btn-delete" onclick="remove(ref(db,'categories/${c.key}'))">X</button></span></div>`;
+                sel.innerHTML += `<option value="${c.val().name}">${c.val().name}</option>`;
+            });
+        });
+
+        // --- 4. PROJECTS (No Price) ---
+        window.uploadFullProject = async function() {
+            const status = document.getElementById('upload-status');
+            const editId = document.getElementById('pf-edit-id').value; 
+            const title = document.getElementById('pf-title').value;
+            const category = document.getElementById('pf-cat-select').value;
+            const desc = document.getElementById('pf-desc').value; 
+            
+            const mainFile = document.getElementById('pf-main-img').files[0];
+            const subFiles = document.getElementById('pf-sub-imgs').files;
+            const videoFile = document.getElementById('pf-video').files[0];
+            
+            let mainUrl = document.getElementById('pf-main-url').value;
+            const subUrlsText = document.getElementById('pf-sub-urls').value;
+            let videoUrl = document.getElementById('pf-video-url').value;
+
+            if(!title || !category) return alert("Title & Category required!");
+            if(!mainFile && !mainUrl) return alert("Main Image required!");
+
+            status.innerText = "⏳ Processing...";
+
+            try {
+                if(mainFile) {
+                    status.innerText = "Uploading Main Image...";
+                    const snap = await uploadBytes(sRef(storage, 'projects/'+mainFile.name), mainFile);
+                    mainUrl = await getDownloadURL(snap.ref);
+                }
+
+                let subUrls = [];
+                if(subUrlsText.trim()) subUrls = subUrlsText.split('\n').filter(u => u.trim() !== '');
+                
+                if(subFiles.length > 0) {
+                    status.innerText = "Uploading Extra Images...";
+                    for(let i=0; i<subFiles.length && i<10; i++) {
+                        const snap = await uploadBytes(sRef(storage, 'projects/'+subFiles[i].name), subFiles[i]);
+                        subUrls.push(await getDownloadURL(snap.ref));
+                    }
+                }
+
+                if(videoFile) {
+                    status.innerText = "Uploading Video...";
+                    const snap = await uploadBytes(sRef(storage, 'projects/'+videoFile.name), videoFile);
+                    videoUrl = await getDownloadURL(snap.ref);
+                }
+
+                status.innerText = "Saving...";
+                const projectData = { title, category, description: desc, mainImage: mainUrl, subImages: subUrls, video: videoUrl, timestamp: Date.now() };
+
+                if(editId) {
+                    await update(ref(db, 'gallery/' + editId), projectData);
+                    alert("Project Updated!");
+                    cancelProjectEdit();
+                } else {
+                    await push(ref(db, 'gallery'), projectData);
+                    alert("Project Added!");
+                    cancelProjectEdit();
+                }
+                status.innerText = "✅ Done!";
+
+            } catch(err) { status.innerText = "Error: " + err.message; }
+        }
+
+        window.editProject = function(id, title, category, desc, mainImg, subImgsStr, video) {
+            document.getElementById('pf-edit-id').value = id;
+            document.getElementById('pf-title').value = title;
+            document.getElementById('pf-cat-select').value = category;
+            document.getElementById('pf-desc').value = desc; 
+            document.getElementById('pf-main-url').value = mainImg;
+            document.getElementById('pf-sub-urls').value = subImgsStr.replace(/,/g, '\n');
+            document.getElementById('pf-video-url').value = video;
+
+            document.getElementById('btn-save-proj').innerText = "💾 Update Project";
+            document.getElementById('btn-cancel-proj').style.display = "inline-block";
+            document.getElementById('project-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        window.cancelProjectEdit = function() {
+            document.getElementById('pf-edit-id').value = "";
+            document.getElementById('pf-title').value = "";
+            document.getElementById('pf-desc').value = ""; 
+            document.getElementById('pf-main-url').value = "";
+            document.getElementById('pf-sub-urls').value = "";
+            document.getElementById('pf-video-url').value = "";
+            document.getElementById('pf-main-img').value = ""; 
+            document.getElementById('pf-sub-imgs').value = "";
+            document.getElementById('pf-video').value = "";
+
+            document.getElementById('btn-save-proj').innerText = "🚀 Upload Project";
+            document.getElementById('btn-cancel-proj').style.display = "none";
+        }
+
+        onValue(ref(db, 'gallery'), (snap) => {
+            const listDiv = document.getElementById('gallery-list-display');
+            listDiv.innerHTML = "";
+            if(snap.exists()) {
+                snap.forEach(child => {
+                    const p = child.val();
+                    const key = child.key;
+                    const sTitle = p.title.replace(/'/g, "\\'");
+                    const sDesc = p.description ? p.description.replace(/"/g, '&quot;').replace(/'/g, "\\'") : "";
+                    const sSub = p.subImages ? p.subImages.join(',') : "";
+                    
+                    listDiv.innerHTML += `
+                        <div class="project-item">
+                            <img src="${p.mainImage}" class="project-img">
+                            <div class="project-info">
+                                <strong>${p.title}</strong><br>
+                                <small>${p.category}</small>
+                            </div>
+                            <button class="btn-edit" onclick="editProject('${key}', '${sTitle}', '${p.category}', '${sDesc}', '${p.mainImage}', '${sSub}', '${p.video||""}')">Edit</button>
+                            <button class="btn-delete" onclick="remove(ref(db, 'gallery/${key}'))">Delete</button>
+                        </div>
+                    `;
+                });
+            } else { listDiv.innerHTML = "<p>No projects uploaded.</p>"; }
+        });
+        
+        window.remove = remove; window.ref = ref; window.db = db;
     </script>
 </body>
 </html>
