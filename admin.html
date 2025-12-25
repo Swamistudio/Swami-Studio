@@ -62,7 +62,25 @@
                  <button onclick="uploadLogo()" style="background:#333; margin-top:10px; width:auto;">Upload</button>
                  <input type="text" id="set-logo" class="url-input" placeholder="Logo URL" style="margin-top:10px;">
             </div>
-            <button onclick="saveSettings()">Save Settings</button>
+            <button onclick="saveSettings()">Save General Settings</button>
+        </div>
+
+        <div class="section-box" style="border-left: 5px solid #2ecc71;">
+            <h2>🎨 About Us Background</h2>
+            <p style="color:#666;">Upload an Image OR a Video to play behind the About Us section.</p>
+            
+            <label>Select Image or Video File:</label>
+            <input type="file" id="about-bg-file" accept="image/*,video/*">
+            
+            <p style="margin:10px 0; font-weight:bold;">OR</p>
+            
+            <label>Paste URL:</label>
+            <input type="text" id="about-bg-url" class="url-input" placeholder="https://...">
+            
+            <input type="hidden" id="about-bg-type"> 
+
+            <button onclick="saveAboutBg()" style="background:#2ecc71; color:white;">Save Background</button>
+            <p id="about-status" style="color:blue; margin-top:10px;"></p>
         </div>
 
         <div class="section-box">
@@ -155,7 +173,6 @@
         const db = getDatabase(app);
         const storage = getStorage(app);
 
-        // PASSWORD UPDATED HERE
         window.checkLogin = function() {
             if(document.getElementById('admin-pass').value === "swami1997") {
                 document.getElementById('login-modal').style.display = 'none';
@@ -163,7 +180,7 @@
             } else { alert("Wrong Password"); }
         }
 
-        // 1. SETTINGS
+        // --- 1. SETTINGS ---
         window.uploadLogo = function() {
             const file = document.getElementById('logo-file').files[0];
             if(!file) return alert("Select logo file");
@@ -176,12 +193,12 @@
             });
         }
         window.saveSettings = function() {
-            set(ref(db, 'settings'), {
+            set(ref(db, 'settings/general'), {
                 tagline: document.getElementById('set-tagline').value,
                 logoUrl: document.getElementById('set-logo').value
             }).then(() => alert("Settings Saved!"));
         }
-        onValue(ref(db, 'settings'), (snap) => {
+        onValue(ref(db, 'settings/general'), (snap) => {
             const d = snap.val();
             if(d) {
                 document.getElementById('set-tagline').value = d.tagline || "";
@@ -189,7 +206,50 @@
             }
         });
 
-        // 2. CATEGORIES (Description Logic Removed)
+        // --- 2. ABOUT US BACKGROUND LOGIC (NEW) ---
+        window.saveAboutBg = function() {
+            const file = document.getElementById('about-bg-file').files[0];
+            const urlInput = document.getElementById('about-bg-url').value;
+            const status = document.getElementById('about-status');
+
+            status.innerText = "Processing...";
+
+            // Helper to save to DB
+            const saveToDb = (url, type) => {
+                set(ref(db, 'settings/aboutBg'), { url: url, type: type })
+                .then(() => { status.innerText = "✅ Background Saved!"; alert("Background Updated!"); });
+            };
+
+            if (file) {
+                // Determine Type (Image or Video)
+                const type = file.type.startsWith('video') ? 'video' : 'image';
+                status.innerText = `Uploading ${type}...`;
+                
+                const storageRef = sRef(storage, 'backgrounds/' + Date.now() + '_' + file.name);
+                uploadBytes(storageRef, file).then(snap => {
+                    getDownloadURL(snap.ref).then(url => {
+                        saveToDb(url, type);
+                    });
+                });
+            } else if (urlInput) {
+                // If using URL, try to guess type or default to image
+                // Basic check: if it ends in mp4/webm/mov -> video, else image
+                const type = (urlInput.match(/\.(mp4|webm|mov)$/i)) ? 'video' : 'image';
+                saveToDb(urlInput, type);
+            } else {
+                alert("Please select a file or paste a URL");
+            }
+        }
+        
+        // Load About BG URL to input (for viewing)
+        onValue(ref(db, 'settings/aboutBg'), (snap) => {
+            if(snap.exists()) {
+                document.getElementById('about-bg-url').value = snap.val().url;
+            }
+        });
+
+
+        // --- 3. CATEGORIES ---
         window.saveCategory = function() {
             const id = document.getElementById('edit-cat-id').value;
             const name = document.getElementById('cat-name').value;
@@ -219,14 +279,14 @@
             });
         });
 
-        // 3. PROJECTS (Description Added)
+        // --- 4. PROJECTS ---
         window.uploadFullProject = async function() {
             const status = document.getElementById('upload-status');
             const editId = document.getElementById('pf-edit-id').value; 
             const title = document.getElementById('pf-title').value;
             const category = document.getElementById('pf-cat-select').value;
             const price = document.getElementById('pf-price').value; 
-            const desc = document.getElementById('pf-desc').value; // Get Description
+            const desc = document.getElementById('pf-desc').value; 
             
             const mainFile = document.getElementById('pf-main-img').files[0];
             const subFiles = document.getElementById('pf-sub-imgs').files;
@@ -266,7 +326,6 @@
                 }
 
                 status.innerText = "Saving...";
-                // Include Description in Data
                 const projectData = { title, category, price, description: desc, mainImage: mainUrl, subImages: subUrls, video: videoUrl, timestamp: Date.now() };
 
                 if(editId) {
@@ -288,7 +347,7 @@
             document.getElementById('pf-title').value = title;
             document.getElementById('pf-cat-select').value = category;
             document.getElementById('pf-price').value = price;
-            document.getElementById('pf-desc').value = desc; // Set Description
+            document.getElementById('pf-desc').value = desc; 
             document.getElementById('pf-main-url').value = mainImg;
             document.getElementById('pf-sub-urls').value = subImgsStr.replace(/,/g, '\n');
             document.getElementById('pf-video-url').value = video;
@@ -302,7 +361,7 @@
             document.getElementById('pf-edit-id').value = "";
             document.getElementById('pf-title').value = "";
             document.getElementById('pf-price').value = "";
-            document.getElementById('pf-desc').value = ""; // Clear Description
+            document.getElementById('pf-desc').value = ""; 
             document.getElementById('pf-main-url').value = "";
             document.getElementById('pf-sub-urls').value = "";
             document.getElementById('pf-video-url').value = "";
