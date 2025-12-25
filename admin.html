@@ -9,29 +9,31 @@
         .container { max-width: 950px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         h2 { border-bottom: 2px solid #D4AF37; padding-bottom: 10px; color: #333; margin-top: 0; }
         .section-box { background: #fff; padding: 25px; margin-bottom: 30px; border: 1px solid #e1e4e8; border-radius: 8px; position: relative; }
-        
         label { font-weight: 600; display: block; margin-top: 15px; margin-bottom: 5px; color: #444; }
         input, button, select, textarea { width: 100%; padding: 12px; margin-top: 5px; box-sizing: border-box; border-radius: 6px; border: 1px solid #ccc; }
         
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .container { padding: 20px; }
+            .section-box { padding: 15px; }
+            .flex-group { flex-direction: column !important; gap: 0 !important; }
+            .flex-group > div { width: 100%; }
+        }
+
         .url-input { border: 1px dashed #D4AF37; background: #fffdf5; }
         .price-input { border: 2px solid #2ecc71; font-weight: bold; font-size: 1.1em; color: #2ecc71; }
-        
         button { background: #D4AF37; color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 20px; transition: 0.2s; font-size: 15px; }
-        button:hover { background: #b59228; }
         
-        /* Action Buttons */
-        .btn-edit { background: #333; width: auto; padding: 6px 15px; font-size: 13px; margin-right: 5px; margin-top: 0; }
-        .btn-edit:hover { background: #555; }
-        .btn-delete { background: #e74c3c; width: auto; padding: 6px 15px; font-size: 13px; margin-top: 0; }
+        .btn-edit { background: #333; width: auto; padding: 8px 15px; font-size: 13px; margin-right: 5px; margin-top: 5px; }
+        .btn-delete { background: #e74c3c; width: auto; padding: 8px 15px; font-size: 13px; margin-top: 5px; }
         .btn-cancel { background: #95a5a6; display: none; margin-left: 10px; width: auto; }
 
-        /* Lists */
-        .project-item { display: flex; align-items: center; background: #f9f9f9; padding: 10px; border: 1px solid #eee; margin-bottom: 10px; border-radius: 6px; }
-        .project-img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; margin-right: 15px; border: 1px solid #ddd; }
-        .project-info { flex: 1; }
-        .project-price { color: #2ecc71; font-weight: bold; }
+        .project-item { display: flex; align-items: center; background: #f9f9f9; padding: 10px; border: 1px solid #eee; margin-bottom: 10px; border-radius: 6px; flex-wrap: wrap; }
+        .project-img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; margin-right: 15px; }
+        .project-info { flex: 1; min-width: 150px; }
+        .flex-group { display: flex; gap: 20px; }
 
-        /* Login Modal */
         #login-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 999; }
         #login-box { background: white; padding: 40px; width: 320px; text-align: center; border-radius: 10px; }
     </style>
@@ -65,12 +67,10 @@
 
         <div class="section-box">
             <h2>📂 Manage Categories</h2>
-            <p style="color:#666; font-size:0.9em;">Set descriptions here. All products in this category will use this description.</p>
             <input type="hidden" id="edit-cat-id">
             <input type="text" id="cat-name" placeholder="Category Name">
-            <textarea id="cat-desc" placeholder="Category Description" style="height:60px;"></textarea>
             <button onclick="saveCategory()" id="btn-save-cat">➕ Add Category</button>
-            <button onclick="cancelCatEdit()" id="btn-cancel-cat" style="display:none; background:#999; width:auto;">Cancel</button>
+            <button onclick="cancelCatEdit()" id="btn-cancel-cat" class="btn-cancel">Cancel</button>
             <div id="category-list-display" style="margin-top:15px;"></div>
         </div>
 
@@ -81,7 +81,7 @@
             <label>1. Title / Client Name:</label>
             <input type="text" id="pf-title" placeholder="e.g. Wedding Package A">
 
-            <div style="display:flex; gap:20px;">
+            <div class="flex-group">
                 <div style="flex:1;">
                     <label>2. Category:</label>
                     <select id="pf-cat-select"><option value="">Loading...</option></select>
@@ -92,7 +92,10 @@
                 </div>
             </div>
 
-            <label>4. Main Image (Cover):</label>
+            <label>4. Description:</label>
+            <textarea id="pf-desc" placeholder="Details about this project..." style="height:60px;"></textarea>
+
+            <label>5. Main Image (Cover):</label>
             <div style="background:#f9f9f9; padding:15px; border-radius:6px;">
                 <p style="margin:0 0 5px 0; font-size:0.9em;">Option A: Upload New File</p>
                 <input type="file" id="pf-main-img" style="margin-top:0;">
@@ -101,16 +104,16 @@
                 <input type="text" id="pf-main-url" class="url-input" placeholder="https://..." style="margin-top:0;">
             </div>
 
-            <label>5. Extra Images (Max 10):</label>
+            <label>6. Extra Images (Max 10):</label>
             <div style="background:#f9f9f9; padding:15px; border-radius:6px;">
-                <p style="margin:0 0 5px 0; font-size:0.9em;">Option A: Upload New Files (Select up to 10)</p>
+                <p style="margin:0 0 5px 0; font-size:0.9em;">Upload New (Select up to 10)</p>
                 <input type="file" id="pf-sub-imgs" multiple style="margin-top:0;">
                 <p style="margin:10px 0 5px 0; font-size:0.9em; font-weight:bold;">OR</p>
-                <p style="margin:0 0 5px 0; font-size:0.9em;">Option B: Image URLs (One per line)</p>
+                <p style="margin:0 0 5px 0; font-size:0.9em;">Image URLs (One per line)</p>
                 <textarea id="pf-sub-urls" class="url-input" placeholder="https://..." style="height:80px; margin-top:0;"></textarea>
             </div>
 
-            <label>6. Video:</label>
+            <label>7. Video:</label>
             <div style="background:#f9f9f9; padding:15px; border-radius:6px;">
                 <p style="margin:0 0 5px 0; font-size:0.9em;">Option A: Upload New File</p>
                 <input type="file" id="pf-video" accept="video/*" style="margin-top:0;">
@@ -119,7 +122,7 @@
                 <input type="text" id="pf-video-url" class="url-input" placeholder="https://..." style="margin-top:0;">
             </div>
 
-            <div style="display:flex; align-items:center;">
+            <div style="display:flex; align-items:center; flex-wrap:wrap;">
                 <button onclick="uploadFullProject()" id="btn-save-proj">🚀 Upload Project</button>
                 <button onclick="cancelProjectEdit()" id="btn-cancel-proj" class="btn-cancel">Cancel Edit</button>
             </div>
@@ -152,14 +155,15 @@
         const db = getDatabase(app);
         const storage = getStorage(app);
 
+        // PASSWORD UPDATED HERE
         window.checkLogin = function() {
-            if(document.getElementById('admin-pass').value === "admin123") {
+            if(document.getElementById('admin-pass').value === "swami1997") {
                 document.getElementById('login-modal').style.display = 'none';
                 document.getElementById('admin-panel').style.display = 'block';
             } else { alert("Wrong Password"); }
         }
 
-        // --- 1. SETTINGS & LOGO ---
+        // 1. SETTINGS
         window.uploadLogo = function() {
             const file = document.getElementById('logo-file').files[0];
             if(!file) return alert("Select logo file");
@@ -185,26 +189,23 @@
             }
         });
 
-        // --- 2. CATEGORY MANAGER ---
+        // 2. CATEGORIES (Description Logic Removed)
         window.saveCategory = function() {
             const id = document.getElementById('edit-cat-id').value;
             const name = document.getElementById('cat-name').value;
-            const desc = document.getElementById('cat-desc').value;
             if(!name) return alert("Name required");
-            if(id) update(ref(db, 'categories/'+id), { name, description: desc }).then(()=>cancelCatEdit());
-            else push(ref(db, 'categories'), { name, description: desc }).then(()=>cancelCatEdit());
+            if(id) update(ref(db, 'categories/'+id), { name }).then(()=>cancelCatEdit());
+            else push(ref(db, 'categories'), { name }).then(()=>cancelCatEdit());
         }
-        window.editCategory = function(id, name, desc) {
+        window.editCategory = function(id, name) {
             document.getElementById('edit-cat-id').value = id;
             document.getElementById('cat-name').value = name;
-            document.getElementById('cat-desc').value = desc;
             document.getElementById('btn-save-cat').innerText = "Update";
             document.getElementById('btn-cancel-cat').style.display = "inline-block";
         }
         window.cancelCatEdit = function() {
             document.getElementById('edit-cat-id').value = "";
             document.getElementById('cat-name').value = "";
-            document.getElementById('cat-desc').value = "";
             document.getElementById('btn-save-cat').innerText = "➕ Add Category";
             document.getElementById('btn-cancel-cat').style.display = "none";
         }
@@ -213,20 +214,19 @@
             const sel = document.getElementById('pf-cat-select');
             div.innerHTML = ""; sel.innerHTML = "<option value=''>Select Category...</option>";
             if(snap.exists()) snap.forEach(c => {
-                const sDesc = c.val().description ? c.val().description.replace(/"/g, '&quot;') : "";
-                div.innerHTML += `<div style="background:#eee; padding:8px; margin-bottom:5px; display:flex; justify-content:space-between;"><span><strong>${c.val().name}</strong></span><span><button class="btn-edit" onclick='editCategory("${c.key}", "${c.val().name}", "${sDesc}")'>Edit</button><button class="btn-delete" onclick="remove(ref(db,'categories/${c.key}'))">X</button></span></div>`;
+                div.innerHTML += `<div style="background:#eee; padding:8px; margin-bottom:5px; display:flex; justify-content:space-between;"><span><strong>${c.val().name}</strong></span><span><button class="btn-edit" onclick='editCategory("${c.key}", "${c.val().name}")'>Edit</button><button class="btn-delete" onclick="remove(ref(db,'categories/${c.key}'))">X</button></span></div>`;
                 sel.innerHTML += `<option value="${c.val().name}">${c.val().name}</option>`;
             });
         });
 
-        // --- 3. PROJECT MANAGER (ADD & EDIT) ---
+        // 3. PROJECTS (Description Added)
         window.uploadFullProject = async function() {
             const status = document.getElementById('upload-status');
             const editId = document.getElementById('pf-edit-id').value; 
-            
             const title = document.getElementById('pf-title').value;
             const category = document.getElementById('pf-cat-select').value;
             const price = document.getElementById('pf-price').value; 
+            const desc = document.getElementById('pf-desc').value; // Get Description
             
             const mainFile = document.getElementById('pf-main-img').files[0];
             const subFiles = document.getElementById('pf-sub-imgs').files;
@@ -251,7 +251,6 @@
                 let subUrls = [];
                 if(subUrlsText.trim()) subUrls = subUrlsText.split('\n').filter(u => u.trim() !== '');
                 
-                // UPDATED: LOOP UP TO 10
                 if(subFiles.length > 0) {
                     status.innerText = "Uploading Extra Images...";
                     for(let i=0; i<subFiles.length && i<10; i++) {
@@ -267,7 +266,8 @@
                 }
 
                 status.innerText = "Saving...";
-                const projectData = { title, category, price, mainImage: mainUrl, subImages: subUrls, video: videoUrl, timestamp: Date.now() };
+                // Include Description in Data
+                const projectData = { title, category, price, description: desc, mainImage: mainUrl, subImages: subUrls, video: videoUrl, timestamp: Date.now() };
 
                 if(editId) {
                     await update(ref(db, 'gallery/' + editId), projectData);
@@ -283,11 +283,12 @@
             } catch(err) { status.innerText = "Error: " + err.message; }
         }
 
-        window.editProject = function(id, title, category, price, mainImg, subImgsStr, video) {
+        window.editProject = function(id, title, category, price, desc, mainImg, subImgsStr, video) {
             document.getElementById('pf-edit-id').value = id;
             document.getElementById('pf-title').value = title;
             document.getElementById('pf-cat-select').value = category;
             document.getElementById('pf-price').value = price;
+            document.getElementById('pf-desc').value = desc; // Set Description
             document.getElementById('pf-main-url').value = mainImg;
             document.getElementById('pf-sub-urls').value = subImgsStr.replace(/,/g, '\n');
             document.getElementById('pf-video-url').value = video;
@@ -301,6 +302,7 @@
             document.getElementById('pf-edit-id').value = "";
             document.getElementById('pf-title').value = "";
             document.getElementById('pf-price').value = "";
+            document.getElementById('pf-desc').value = ""; // Clear Description
             document.getElementById('pf-main-url').value = "";
             document.getElementById('pf-sub-urls').value = "";
             document.getElementById('pf-video-url').value = "";
@@ -320,6 +322,7 @@
                     const p = child.val();
                     const key = child.key;
                     const sTitle = p.title.replace(/'/g, "\\'");
+                    const sDesc = p.description ? p.description.replace(/"/g, '&quot;').replace(/'/g, "\\'") : "";
                     const sSub = p.subImages ? p.subImages.join(',') : "";
                     
                     listDiv.innerHTML += `
@@ -329,7 +332,7 @@
                                 <strong>${p.title}</strong><br>
                                 <span class="project-price">₹${p.price}</span> | <small>${p.category}</small>
                             </div>
-                            <button class="btn-edit" onclick="editProject('${key}', '${sTitle}', '${p.category}', '${p.price}', '${p.mainImage}', '${sSub}', '${p.video||""}')">Edit</button>
+                            <button class="btn-edit" onclick="editProject('${key}', '${sTitle}', '${p.category}', '${p.price}', '${sDesc}', '${p.mainImage}', '${sSub}', '${p.video||""}')">Edit</button>
                             <button class="btn-delete" onclick="remove(ref(db, 'gallery/${key}'))">Delete</button>
                         </div>
                     `;
